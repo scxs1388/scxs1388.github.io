@@ -25,7 +25,7 @@
   <meta name="description" content="本文提出了 Training Quantization Thresholds (TQT)：一种基于 QAT 的学习均匀、对称、Per-tensor 量化器的截断阈值的方法。TQT 在训练时使用了 STE ，并将量化步长限制在了 Power-of-Two，采用 PoT 形式的量化步长在推理时仅使用整型加法和移位运算，利于硬件部署。本文对 TQT 的鲁棒性进行了数学分析，并在多个 CNN 上进行了 I">
 <meta property="og:type" content="article">
 <meta property="og:title" content="(MLSys 2020) TQT - Trained Quantization Thresholds for Accurate and Efficient Fix-Point Inference of Deep Neural Networks">
-<meta property="og:url" content="https://scxs1388.github.io/2021/12/02/TQT/index.html">
+<meta property="og:url" content="https://scxs1388.github.io/2021/12/02/tqt/index.html">
 <meta property="og:site_name" content="Real Zhang&#39;s Blog">
 <meta property="og:description" content="本文提出了 Training Quantization Thresholds (TQT)：一种基于 QAT 的学习均匀、对称、Per-tensor 量化器的截断阈值的方法。TQT 在训练时使用了 STE ，并将量化步长限制在了 Power-of-Two，采用 PoT 形式的量化步长在推理时仅使用整型加法和移位运算，利于硬件部署。本文对 TQT 的鲁棒性进行了数学分析，并在多个 CNN 上进行了 I">
 <meta property="og:locale" content="zh_CN">
@@ -37,7 +37,7 @@
 <meta property="og:image" content="https://i.loli.net/2021/12/03/KjP3lmHtBgifpFw.png">
 <meta property="og:image" content="https://i.loli.net/2021/12/03/ZGzOqthfEnCeb3s.png">
 <meta property="article:published_time" content="2021-12-02T06:53:37.000Z">
-<meta property="article:modified_time" content="2022-03-12T07:30:23.106Z">
+<meta property="article:modified_time" content="2022-03-12T07:33:15.962Z">
 <meta property="article:author" content="Real Zhang">
 <meta property="article:tag" content="Deep Learning">
 <meta property="article:tag" content="Quantization">
@@ -50,7 +50,7 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://i.loli.net/2021/12/02/Q3jUlOMsLCuPwvE.png">
 
-<link rel="canonical" href="https://scxs1388.github.io/2021/12/02/TQT/">
+<link rel="canonical" href="https://scxs1388.github.io/2021/12/02/tqt/">
 
 
 <script id="page-configurations">
@@ -230,7 +230,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://scxs1388.github.io/2021/12/02/TQT/">
+    <link itemprop="mainEntityOfPage" href="https://scxs1388.github.io/2021/12/02/tqt/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -260,7 +260,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-12 15:30:23" itemprop="dateModified" datetime="2022-03-12T15:30:23+08:00">2022-03-12</time>
+                <time title="修改时间：2022-03-12 15:33:15" itemprop="dateModified" datetime="2022-03-12T15:33:15+08:00">2022-03-12</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -273,7 +273,7 @@
             </span>
 
           
-            <span id="/2021/12/02/TQT/" class="post-meta-item leancloud_visitors" data-flag-title="(MLSys 2020) TQT - Trained Quantization Thresholds for Accurate and Efficient Fix-Point Inference of Deep Neural Networks" title="阅读次数">
+            <span id="/2021/12/02/tqt/" class="post-meta-item leancloud_visitors" data-flag-title="(MLSys 2020) TQT - Trained Quantization Thresholds for Accurate and Efficient Fix-Point Inference of Deep Neural Networks" title="阅读次数">
               <span class="post-meta-item-icon">
                 <i class="fa fa-eye"></i>
               </span>
@@ -288,8 +288,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2021/12/02/TQT/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/12/02/TQT/" itemprop="commentCount"></span>
+    <a title="valine" href="/2021/12/02/tqt/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/12/02/tqt/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -441,7 +441,7 @@ Figure 6 中展示了 INT8 和 INT4 量化不同模型所有层的 fractional le
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="https://scxs1388.github.io/2021/12/02/TQT/" title="(MLSys 2020) TQT - Trained Quantization Thresholds for Accurate and Efficient Fix-Point Inference of Deep Neural Networks">https://scxs1388.github.io/2021/12/02/TQT/</a>
+    <a href="https://scxs1388.github.io/2021/12/02/tqt/" title="(MLSys 2020) TQT - Trained Quantization Thresholds for Accurate and Efficient Fix-Point Inference of Deep Neural Networks">https://scxs1388.github.io/2021/12/02/tqt/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
