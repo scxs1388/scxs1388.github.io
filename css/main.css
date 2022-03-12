@@ -206,7 +206,7 @@ body {
   background: var(--body-bg-color);
   color: var(--text-color);
   font-family: 'Lato', "PingFang SC", "Microsoft YaHei", sans-serif;
-  font-size: 0.84em;
+  font-size: 1em;
   line-height: 2;
 }
 @media (max-width: 991px) {
@@ -1293,7 +1293,7 @@ pre .javascript .function {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #ff13de;
+  background: #b08cff;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
@@ -2810,6 +2810,11 @@ body {
 .header-inner {
   opacity: 0.75;
   z-index: 10;
+}
+code {
+  background: #2d2d2d;
+  color: #ffc5c5;
+  font-size: 0.85em;
 }
 ::-webkit-scrollbar {
   width: 6px;
