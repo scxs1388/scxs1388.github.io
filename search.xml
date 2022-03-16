@@ -1,6 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>(ICML 2020) Up or Down? Adaptive Rounding for Post Training Quantization</title>
+    <url>/2022/03/12/adaround/</url>
+    <content><![CDATA[<p>本文提出了 AdaRound：一种自适应舍入的 PTQ 方法。文中通过实验观察指出基于 rounding-to-nearest 的量化舍入方法并不是最优的量化方法，并基于 Hessian 矩阵提出了一种使用少量校准集来自适应地学习权重量化舍入的量化方法。AdaRound 能够将 ResNet-18、MobileNet-V2 等模型量化到 4 bits，并保持较高的模型精度。</p>
+<span id="more"></span>
+
+<blockquote>
+<ul>
+<li>Title: <strong>Up or Down? Adaptive Rounding for Post Training Quantizatio</strong></li>
+<li>Venue: <strong>ICML 2020</strong></li>
+<li>Author(s): <em>Markus Nagel, Rana Ali Amjad, Mart van Baalen, Christos Louizos, Tijmen Blankevoort</em></li>
+<li>Institution(s): <em>Qualcomm AI Research</em></li>
+<li>Link(s): <a href="https://arxiv.org/pdf/2006.10518">arxiv:2006.10518</a></li>
+</ul>
+</blockquote>
+]]></content>
+      <categories>
+        <category>Paper Reading</category>
+      </categories>
+      <tags>
+        <tag>Deep Learning</tag>
+        <tag>Quantization</tag>
+        <tag>ICML 2020</tag>
+        <tag>PTQ</tag>
+        <tag>Hessian</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>How to Break MD5 and Other Hash Functions</title>
     <url>/2021/12/04/break-md5/</url>
     <content><![CDATA[<p>MD5(Message Digest 5) 诞生于 1992 年，是对 MD4 算法的改进。作为目前使用最为普遍的加密哈希函数之一，MD5 自诞生起其安全性就被广泛研究。针对 MD5 最著名的攻击方式是 semi-free start collision，这种攻击方式将哈希函数的参数初始标准值替换为了其它的非标准值，从而实现了攻击。本文提出了一种针对 MD5 的攻击方式，该攻击能够在 $15$ 分钟到一个小时的计算时间内发现 MD5 碰撞。该攻击是一种差分攻击，但与大多数差分攻击不同，该攻击使用模整数减法代替异或作为差异度量，这种差分称为模差 (modular differential)。该攻击在 MD4 上可以在不到几分之一秒的时间内发现碰撞。此外，这种攻击也适用于 RIPEMD、HAVAL 等其他哈希函数。</p>
@@ -299,12 +326,12 @@ Figure 6 中展示了 INT8 和 INT4 量化不同模型所有层的 fractional le
       <tags>
         <tag>Deep Learning</tag>
         <tag>Quantization</tag>
-        <tag>MLSys 2020</tag>
         <tag>QAT</tag>
-        <tag>STE</tag>
-        <tag>Integer Only</tag>
         <tag>Symmetric</tag>
         <tag>Uniform</tag>
+        <tag>MLSys 2020</tag>
+        <tag>STE</tag>
+        <tag>Integer Only</tag>
       </tags>
   </entry>
   <entry>
