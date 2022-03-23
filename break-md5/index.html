@@ -25,7 +25,7 @@
   <meta name="description" content="MD5(Message Digest 5) 诞生于 1992 年，是对 MD4 算法的改进。作为目前使用最为普遍的加密哈希函数之一，MD5 自诞生起其安全性就被广泛研究。针对 MD5 最著名的攻击方式是 semi-free start collision，这种攻击方式将哈希函数的参数初始标准值替换为了其它的非标准值，从而实现了攻击。本文提出了一种针对 MD5 的攻击方式，该攻击能够在 $15$ 分">
 <meta property="og:type" content="article">
 <meta property="og:title" content="How to Break MD5 and Other Hash Functions">
-<meta property="og:url" content="https://scxs1388.github.io/2021/12/04/break-md5/index.html">
+<meta property="og:url" content="https://scxs1388.github.io/break-md5/index.html">
 <meta property="og:site_name" content="Real Zhang&#39;s Blog">
 <meta property="og:description" content="MD5(Message Digest 5) 诞生于 1992 年，是对 MD4 算法的改进。作为目前使用最为普遍的加密哈希函数之一，MD5 自诞生起其安全性就被广泛研究。针对 MD5 最著名的攻击方式是 semi-free start collision，这种攻击方式将哈希函数的参数初始标准值替换为了其它的非标准值，从而实现了攻击。本文提出了一种针对 MD5 的攻击方式，该攻击能够在 $15$ 分">
 <meta property="og:locale" content="zh_CN">
@@ -43,7 +43,7 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://s2.loli.net/2021/12/13/lyFMTBePOuizhra.png">
 
-<link rel="canonical" href="https://scxs1388.github.io/2021/12/04/break-md5/">
+<link rel="canonical" href="https://scxs1388.github.io/break-md5/">
 
 
 <script id="page-configurations">
@@ -152,7 +152,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">13</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">10</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -162,7 +162,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">4</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">3</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -223,7 +223,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://scxs1388.github.io/2021/12/04/break-md5/">
+    <link itemprop="mainEntityOfPage" href="https://scxs1388.github.io/break-md5/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -266,7 +266,7 @@
             </span>
 
           
-            <span id="/2021/12/04/break-md5/" class="post-meta-item leancloud_visitors" data-flag-title="How to Break MD5 and Other Hash Functions" title="阅读次数">
+            <span id="/break-md5/" class="post-meta-item leancloud_visitors" data-flag-title="How to Break MD5 and Other Hash Functions" title="阅读次数">
               <span class="post-meta-item-icon">
                 <i class="fa fa-eye"></i>
               </span>
@@ -281,8 +281,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2021/12/04/break-md5/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/12/04/break-md5/" itemprop="commentCount"></span>
+    <a title="valine" href="/break-md5/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/break-md5/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -467,7 +467,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="https://scxs1388.github.io/2021/12/04/break-md5/" title="How to Break MD5 and Other Hash Functions">https://scxs1388.github.io/2021/12/04/break-md5/</a>
+    <a href="https://scxs1388.github.io/break-md5/" title="How to Break MD5 and Other Hash Functions">https://scxs1388.github.io/break-md5/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -489,13 +489,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2021/12/02/tqt/" rel="prev" title="(MLSys 2020) TQT - Trained Quantization Thresholds for Accurate and Efficient Fix-Point Inference of Deep Neural Networks">
+    <a href="/tqt/" rel="prev" title="(MLSys 2020) TQT - Trained Quantization Thresholds for Accurate and Efficient Fix-Point Inference of Deep Neural Networks">
       <i class="fa fa-chevron-left"></i> (MLSys 2020) TQT - Trained Quantization Thresholds for Accurate and Efficient Fix-Point Inference of Deep Neural Networks
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2022/03/12/adaround/" rel="next" title="(ICML 2020) Up or Down? Adaptive Rounding for Post Training Quantization">
-      (ICML 2020) Up or Down? Adaptive Rounding for Post Training Quantization <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -571,7 +568,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-count">3</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -584,7 +581,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

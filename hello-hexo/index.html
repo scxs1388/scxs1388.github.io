@@ -25,16 +25,16 @@
   <meta name="description" content="总结一下建站流程以及过程中踩过的坑。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Hello Hexo">
-<meta property="og:url" content="https://scxs1388.github.io/2021/09/01/hello-hexo/index.html">
+<meta property="og:url" content="https://scxs1388.github.io/hello-hexo/index.html">
 <meta property="og:site_name" content="Real Zhang&#39;s Blog">
 <meta property="og:description" content="总结一下建站流程以及过程中踩过的坑。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-09-01T07:00:00.000Z">
-<meta property="article:modified_time" content="2022-03-12T07:23:19.409Z">
+<meta property="article:modified_time" content="2022-03-23T19:50:57.838Z">
 <meta property="article:author" content="Real Zhang">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://scxs1388.github.io/2021/09/01/hello-hexo/">
+<link rel="canonical" href="https://scxs1388.github.io/hello-hexo/">
 
 
 <script id="page-configurations">
@@ -143,7 +143,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">13</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">10</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -153,7 +153,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">4</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">3</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -214,7 +214,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://scxs1388.github.io/2021/09/01/hello-hexo/">
+    <link itemprop="mainEntityOfPage" href="https://scxs1388.github.io/hello-hexo/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -244,11 +244,11 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-12 15:23:19" itemprop="dateModified" datetime="2022-03-12T15:23:19+08:00">2022-03-12</time>
+                <time title="修改时间：2022-03-24 03:50:57" itemprop="dateModified" datetime="2022-03-24T03:50:57+08:00">2022-03-24</time>
               </span>
 
           
-            <span id="/2021/09/01/hello-hexo/" class="post-meta-item leancloud_visitors" data-flag-title="Hello Hexo" title="阅读次数">
+            <span id="/hello-hexo/" class="post-meta-item leancloud_visitors" data-flag-title="Hello Hexo" title="阅读次数">
               <span class="post-meta-item-icon">
                 <i class="fa fa-eye"></i>
               </span>
@@ -263,8 +263,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2021/09/01/hello-hexo/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/09/01/hello-hexo/" itemprop="commentCount"></span>
+    <a title="valine" href="/hello-hexo/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/hello-hexo/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -370,7 +370,7 @@
 
 
 <h3 id="更换滚动条样式"><a href="#更换滚动条样式" class="headerlink" title="更换滚动条样式"></a>更换滚动条样式</h3><p>更换右侧滚动条样式。<br>编辑 <code>themes/next/source/css/main.styl</code> 文件。添加如下代码：</p>
-<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">// Customized Scrollbar</span><br><span class="line">::-webkit-scrollbar &#123;</span><br><span class="line">  <span class="attribute">width</span>: <span class="number">6px</span>;</span><br><span class="line">  <span class="attribute">height</span>: <span class="number">9px</span>;</span><br><span class="line">  <span class="attribute">background-color</span>: <span class="number">#454545</span>;</span><br><span class="line">&#125;</span><br><span class="line">::-webkit-scrollbar-track &#123;</span><br><span class="line">  <span class="attribute">border-radius</span>: <span class="number">10px</span>;</span><br><span class="line">  <span class="attribute">background-color</span>: <span class="number">#454545</span>;</span><br><span class="line">&#125;</span><br><span class="line">::-webkit-scrollbar-thumb &#123;</span><br><span class="line">  <span class="attribute">border-radius</span>: <span class="number">10px</span>;</span><br><span class="line">  <span class="attribute">background-color</span>: <span class="number">#858585</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">// Customized Scrollbar</span><br><span class="line">::-webkit-scrollbar &#123;</span><br><span class="line">  <span class="attribute">width</span>: <span class="number">6px</span>;</span><br><span class="line">  <span class="attribute">height</span>: <span class="number">9px</span>;</span><br><span class="line">  <span class="attribute">background-color</span>: <span class="number">#454545</span>;</span><br><span class="line">&#125;</span><br><span class="line">::-webkit-scrollbar-track &#123;</span><br><span class="line">  <span class="attribute">border-radius</span>: <span class="number">10px</span>;</span><br><span class="line">  <span class="attribute">background-color</span>: <span class="number">#454545</span>;</span><br><span class="line">&#125;</span><br><span class="line">::-webkit-scrollbar-thumb &#123;</span><br><span class="line">  <span class="attribute">border-radius</span>: <span class="number">10px</span>;</span><br><span class="line">  <span class="attribute">background-color</span>: <span class="number">#858585</span>;</span><br><span class="line">&#125;</span><br><span class="line">::-webkit-scrollbar-thumb:hover &#123;</span><br><span class="line">  <span class="attribute">background-color</span>: <span class="number">#9e9e9e</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 
 <h3 id="添加网站建立时间"><a href="#添加网站建立时间" class="headerlink" title="添加网站建立时间"></a>添加网站建立时间</h3><p>在页面底部 <code>footer</code> 添加网站建立时间计时器。<br>编辑 <code>themes/next/layout/_partials/footer.swig</code> 文件。</p>
@@ -384,6 +384,13 @@
 <figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">deploy:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">git</span> <span class="comment"># 使用 git 协议</span></span><br><span class="line">  <span class="attr">repo:</span> <span class="string">git@github.com:scxs1388/scxs1388.github.io.git</span></span><br><span class="line">  <span class="attr">branch:</span> <span class="string">page</span> <span class="comment"># 默认 main，如不是需要修改</span></span><br></pre></td></tr></table></figure>
 
 
+<h3 id="文章隐藏"><a href="#文章隐藏" class="headerlink" title="文章隐藏"></a>文章隐藏</h3><p>启用文章隐藏功能可以通过修改文章生成的源代码来实现，为了方便可以安装<code>hexo-hide-posts</code> 插件。<br>打开 Console，在 Blog 的根目录执行</p>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-hide-posts <span class="comment">--save</span></span><br></pre></td></tr></table></figure>
+
+<p>之后编辑 <code>_config.yml</code> 文件，添加：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># hexo-hide-posts</span></span><br><span class="line"><span class="attr">hide_posts:</span></span><br><span class="line">  <span class="attr">enable:</span> <span class="literal">true</span></span><br><span class="line">  <span class="comment"># Change the filter name to fit your need</span></span><br><span class="line">  <span class="attr">filter:</span> <span class="string">hidden</span></span><br><span class="line">  <span class="comment"># Generators which you want to expose all posts (include hidden ones) to.</span></span><br><span class="line">  <span class="comment"># Common generators: index, tag, category, archive, sitemap, feed, etc.</span></span><br><span class="line">  <span class="attr">public_generators:</span> []</span><br><span class="line">  <span class="comment"># Add &quot;noindex&quot; meta tag to prevent hidden posts from being indexed by search engines</span></span><br><span class="line">  <span class="attr">noindex:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<p>在写文章时，如果想要隐藏文章，在 front-matter 添加 <code>hidden: true</code> 即可。</p>
 <h3 id="Live2D"><a href="#Live2D" class="headerlink" title="Live2D"></a>Live2D</h3><h4 id="hexo-helper-live2d"><a href="#hexo-helper-live2d" class="headerlink" title="hexo-helper-live2d"></a>hexo-helper-live2d</h4><p>打开 Console，在 Blog 的根目录执行</p>
 <figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-helper-live2d <span class="comment">--save</span></span><br></pre></td></tr></table></figure>
 
@@ -464,7 +471,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="https://scxs1388.github.io/2021/09/01/hello-hexo/" title="Hello Hexo">https://scxs1388.github.io/2021/09/01/hello-hexo/</a>
+    <a href="https://scxs1388.github.io/hello-hexo/" title="Hello Hexo">https://scxs1388.github.io/hello-hexo/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -482,7 +489,7 @@
     <div class="post-nav">
       <div class="post-nav-item"></div>
       <div class="post-nav-item">
-    <a href="/2021/12/02/tqt/" rel="next" title="(MLSys 2020) TQT - Trained Quantization Thresholds for Accurate and Efficient Fix-Point Inference of Deep Neural Networks">
+    <a href="/tqt/" rel="next" title="(MLSys 2020) TQT - Trained Quantization Thresholds for Accurate and Efficient Fix-Point Inference of Deep Neural Networks">
       (MLSys 2020) TQT - Trained Quantization Thresholds for Accurate and Efficient Fix-Point Inference of Deep Neural Networks <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
@@ -544,7 +551,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BD%91%E7%AB%99%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE"><span class="nav-number">1.</span> <span class="nav-text">网站基本配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9B%B4%E6%8D%A2-NexT-%E4%B8%BB%E9%A2%98"><span class="nav-number">2.</span> <span class="nav-text">更换 NexT 主题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9-NexT-%E4%B8%BB%E9%A2%98%E6%A8%A1%E6%9D%BF"><span class="nav-number">3.</span> <span class="nav-text">修改 NexT 主题模板</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E4%BA%AE%E8%89%B2-%E6%9A%97%E8%89%B2%E6%A8%A1%E5%BC%8F"><span class="nav-number">4.</span> <span class="nav-text">修改亮色&#x2F;暗色模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BD%91%E7%AB%99-Favicon"><span class="nav-number">5.</span> <span class="nav-text">网站 Favicon</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Creative-Commons"><span class="nav-number">6.</span> <span class="nav-text">Creative Commons</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%BC%E8%88%AA%E6%A0%8F-%E4%BE%A7%E8%BE%B9%E6%A0%8F-Menu"><span class="nav-number">7.</span> <span class="nav-text">导航栏&#x2F;侧边栏 Menu</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%B4%E5%83%8F-Avatar"><span class="nav-number">8.</span> <span class="nav-text">头像 Avatar</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A4%BE%E4%BA%A4%E8%B4%A6%E5%8F%B7%E9%93%BE%E6%8E%A5"><span class="nav-number">9.</span> <span class="nav-text">社交账号链接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Tag-icon"><span class="nav-number">10.</span> <span class="nav-text">Tag icon</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Github-Banner"><span class="nav-number">11.</span> <span class="nav-text">Github Banner</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%97%E4%BD%93"><span class="nav-number">12.</span> <span class="nav-text">字体</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MathJax"><span class="nav-number">13.</span> <span class="nav-text">MathJax</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Fancybox"><span class="nav-number">14.</span> <span class="nav-text">Fancybox</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Valine"><span class="nav-number">15.</span> <span class="nav-text">Valine</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AB%99%E5%86%85%E6%90%9C%E7%B4%A2"><span class="nav-number">16.</span> <span class="nav-text">站内搜索</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A1%B5%E9%9D%A2%E5%8A%A0%E8%BD%BD%E8%BF%9B%E5%BA%A6%E6%9D%A1"><span class="nav-number">17.</span> <span class="nav-text">页面加载进度条</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%98%85%E8%AF%BB%E8%BF%9B%E5%BA%A6%E6%9D%A1%E5%92%8C%E8%BF%9B%E5%BA%A6%E6%98%BE%E7%A4%BA"><span class="nav-number">18.</span> <span class="nav-text">阅读进度条和进度显示</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9B%B4%E6%8D%A2%E8%83%8C%E6%99%AF%E5%9B%BE%E7%89%87"><span class="nav-number">19.</span> <span class="nav-text">更换背景图片</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9B%B4%E6%94%B9%E9%A1%B5%E9%9D%A2%E5%85%83%E7%B4%A0%E9%80%8F%E6%98%8E%E5%BA%A6"><span class="nav-number">20.</span> <span class="nav-text">更改页面元素透明度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9B%B4%E6%94%B9%E5%86%85%E8%81%94%E4%BB%A3%E7%A0%81%E5%9D%97%E6%A0%B7%E5%BC%8F"><span class="nav-number">21.</span> <span class="nav-text">更改内联代码块样式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9B%B4%E6%8D%A2%E6%BB%9A%E5%8A%A8%E6%9D%A1%E6%A0%B7%E5%BC%8F"><span class="nav-number">22.</span> <span class="nav-text">更换滚动条样式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E7%BD%91%E7%AB%99%E5%BB%BA%E7%AB%8B%E6%97%B6%E9%97%B4"><span class="nav-number">23.</span> <span class="nav-text">添加网站建立时间</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-SSH-%E8%BF%9B%E8%A1%8C%E9%83%A8%E7%BD%B2"><span class="nav-number">24.</span> <span class="nav-text">使用 SSH 进行部署</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Live2D"><span class="nav-number">25.</span> <span class="nav-text">Live2D</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#hexo-helper-live2d"><span class="nav-number">25.1.</span> <span class="nav-text">hexo-helper-live2d</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#live2d-widget"><span class="nav-number">25.2.</span> <span class="nav-text">live2d-widget</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#live2d-widget-pixi-live2d-display"><span class="nav-number">25.3.</span> <span class="nav-text">live2d-widget + pixi-live2d-display</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BD%91%E7%AB%99%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE"><span class="nav-number">1.</span> <span class="nav-text">网站基本配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9B%B4%E6%8D%A2-NexT-%E4%B8%BB%E9%A2%98"><span class="nav-number">2.</span> <span class="nav-text">更换 NexT 主题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9-NexT-%E4%B8%BB%E9%A2%98%E6%A8%A1%E6%9D%BF"><span class="nav-number">3.</span> <span class="nav-text">修改 NexT 主题模板</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E4%BA%AE%E8%89%B2-%E6%9A%97%E8%89%B2%E6%A8%A1%E5%BC%8F"><span class="nav-number">4.</span> <span class="nav-text">修改亮色&#x2F;暗色模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BD%91%E7%AB%99-Favicon"><span class="nav-number">5.</span> <span class="nav-text">网站 Favicon</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Creative-Commons"><span class="nav-number">6.</span> <span class="nav-text">Creative Commons</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%BC%E8%88%AA%E6%A0%8F-%E4%BE%A7%E8%BE%B9%E6%A0%8F-Menu"><span class="nav-number">7.</span> <span class="nav-text">导航栏&#x2F;侧边栏 Menu</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%B4%E5%83%8F-Avatar"><span class="nav-number">8.</span> <span class="nav-text">头像 Avatar</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A4%BE%E4%BA%A4%E8%B4%A6%E5%8F%B7%E9%93%BE%E6%8E%A5"><span class="nav-number">9.</span> <span class="nav-text">社交账号链接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Tag-icon"><span class="nav-number">10.</span> <span class="nav-text">Tag icon</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Github-Banner"><span class="nav-number">11.</span> <span class="nav-text">Github Banner</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%97%E4%BD%93"><span class="nav-number">12.</span> <span class="nav-text">字体</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MathJax"><span class="nav-number">13.</span> <span class="nav-text">MathJax</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Fancybox"><span class="nav-number">14.</span> <span class="nav-text">Fancybox</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Valine"><span class="nav-number">15.</span> <span class="nav-text">Valine</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AB%99%E5%86%85%E6%90%9C%E7%B4%A2"><span class="nav-number">16.</span> <span class="nav-text">站内搜索</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A1%B5%E9%9D%A2%E5%8A%A0%E8%BD%BD%E8%BF%9B%E5%BA%A6%E6%9D%A1"><span class="nav-number">17.</span> <span class="nav-text">页面加载进度条</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%98%85%E8%AF%BB%E8%BF%9B%E5%BA%A6%E6%9D%A1%E5%92%8C%E8%BF%9B%E5%BA%A6%E6%98%BE%E7%A4%BA"><span class="nav-number">18.</span> <span class="nav-text">阅读进度条和进度显示</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9B%B4%E6%8D%A2%E8%83%8C%E6%99%AF%E5%9B%BE%E7%89%87"><span class="nav-number">19.</span> <span class="nav-text">更换背景图片</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9B%B4%E6%94%B9%E9%A1%B5%E9%9D%A2%E5%85%83%E7%B4%A0%E9%80%8F%E6%98%8E%E5%BA%A6"><span class="nav-number">20.</span> <span class="nav-text">更改页面元素透明度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9B%B4%E6%94%B9%E5%86%85%E8%81%94%E4%BB%A3%E7%A0%81%E5%9D%97%E6%A0%B7%E5%BC%8F"><span class="nav-number">21.</span> <span class="nav-text">更改内联代码块样式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9B%B4%E6%8D%A2%E6%BB%9A%E5%8A%A8%E6%9D%A1%E6%A0%B7%E5%BC%8F"><span class="nav-number">22.</span> <span class="nav-text">更换滚动条样式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E7%BD%91%E7%AB%99%E5%BB%BA%E7%AB%8B%E6%97%B6%E9%97%B4"><span class="nav-number">23.</span> <span class="nav-text">添加网站建立时间</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-SSH-%E8%BF%9B%E8%A1%8C%E9%83%A8%E7%BD%B2"><span class="nav-number">24.</span> <span class="nav-text">使用 SSH 进行部署</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%87%E7%AB%A0%E9%9A%90%E8%97%8F"><span class="nav-number">25.</span> <span class="nav-text">文章隐藏</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Live2D"><span class="nav-number">26.</span> <span class="nav-text">Live2D</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#hexo-helper-live2d"><span class="nav-number">26.1.</span> <span class="nav-text">hexo-helper-live2d</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#live2d-widget"><span class="nav-number">26.2.</span> <span class="nav-text">live2d-widget</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#live2d-widget-pixi-live2d-display"><span class="nav-number">26.3.</span> <span class="nav-text">live2d-widget + pixi-live2d-display</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -560,7 +567,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-count">3</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -573,7 +580,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

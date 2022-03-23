@@ -22,24 +22,39 @@
     var CONFIG = {"hostname":"scxs1388.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="本文提出了 AdaRound：一种自适应舍入的 PTQ 方法。文中通过实验观察指出基于 rounding-to-nearest 的量化舍入方法并不是最优的量化方法，并基于 Hessian 矩阵提出了一种使用少量校准集来自适应地学习权重量化舍入的量化方法。AdaRound 能够将 ResNet-18、MobileNet-V2 等模型量化到 4 bits，并保持较高的模型精度。">
+  <meta name="description" content="注意：本文包含大量图片，建议在 WIFI 或非计费网络下浏览。注意：本文不同图片尺寸存在较大差异，建议在较高的网页缩放比例下浏览（推荐 150%）   本文转载自：   Title: 顺德服务器如何使用详解 Author(s): Jinhui Lin Link(s): shimo doc   有一定删改。 登录顺德集群登录地址：http:&#x2F;&#x2F;172.16.12.140 分析：这一步官方文档上给了">
 <meta property="og:type" content="article">
-<meta property="og:title" content="(ICML 2020) Up or Down? Adaptive Rounding for Post Training Quantization">
-<meta property="og:url" content="https://scxs1388.github.io/2022/03/12/adaround/index.html">
+<meta property="og:title" content="思腾合力 Docker 部署踩坑记录">
+<meta property="og:url" content="https://scxs1388.github.io/sitonholy-docker-deployment/index.html">
 <meta property="og:site_name" content="Real Zhang&#39;s Blog">
-<meta property="og:description" content="本文提出了 AdaRound：一种自适应舍入的 PTQ 方法。文中通过实验观察指出基于 rounding-to-nearest 的量化舍入方法并不是最优的量化方法，并基于 Hessian 矩阵提出了一种使用少量校准集来自适应地学习权重量化舍入的量化方法。AdaRound 能够将 ResNet-18、MobileNet-V2 等模型量化到 4 bits，并保持较高的模型精度。">
+<meta property="og:description" content="注意：本文包含大量图片，建议在 WIFI 或非计费网络下浏览。注意：本文不同图片尺寸存在较大差异，建议在较高的网页缩放比例下浏览（推荐 150%）   本文转载自：   Title: 顺德服务器如何使用详解 Author(s): Jinhui Lin Link(s): shimo doc   有一定删改。 登录顺德集群登录地址：http:&#x2F;&#x2F;172.16.12.140 分析：这一步官方文档上给了">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-03-12T14:44:34.000Z">
-<meta property="article:modified_time" content="2022-03-16T16:49:36.693Z">
+<meta property="og:image" content="https://s2.loli.net/2022/03/24/qEkeOoxwPCYh4u9.png">
+<meta property="og:image" content="https://s2.loli.net/2022/03/24/kzhtsuPAZ9vQSno.png">
+<meta property="og:image" content="https://s2.loli.net/2022/03/24/jITP4UAtDZeza6c.png">
+<meta property="og:image" content="https://s2.loli.net/2022/03/24/kw7Iuf9TOB54QeW.png">
+<meta property="og:image" content="https://s2.loli.net/2022/03/24/DbmEoewxqgZzJdn.png">
+<meta property="og:image" content="https://s2.loli.net/2022/03/24/GipvE5Y8PSchkIx.png">
+<meta property="og:image" content="https://s2.loli.net/2022/03/24/Z2e6SDdnb4qyz39.png">
+<meta property="og:image" content="https://s2.loli.net/2022/03/24/Z2e6SDdnb4qyz39.png">
+<meta property="og:image" content="https://s2.loli.net/2022/03/24/mGjX1eZbP8dtr4l.png">
+<meta property="og:image" content="https://s2.loli.net/2022/03/24/I3bEjwhsWd2yJ5S.png">
+<meta property="og:image" content="https://s2.loli.net/2022/03/24/6QXbGc7JpyVjoIK.png">
+<meta property="og:image" content="https://s2.loli.net/2022/03/24/Y6KaxGOHdeL3B4u.png">
+<meta property="og:image" content="https://s2.loli.net/2022/03/24/pfEcQhGO9KC6Mud.png">
+<meta property="og:image" content="https://s2.loli.net/2022/03/24/PCJvGM4inLElBDq.png">
+<meta property="og:image" content="https://s2.loli.net/2022/03/24/IUxJuoc1bVhd69C.png">
+<meta property="og:image" content="https://s2.loli.net/2022/03/24/IrNoFMC5SEHBltz.png">
+<meta property="og:image" content="https://s2.loli.net/2022/03/24/JyBlx9T2jekRSPb.png">
+<meta property="og:image" content="https://s2.loli.net/2022/03/24/ti9RMZvdTglEsAJ.png">
+<meta property="article:published_time" content="2022-03-19T10:06:27.000Z">
+<meta property="article:modified_time" content="2022-03-23T21:14:33.499Z">
 <meta property="article:author" content="Real Zhang">
-<meta property="article:tag" content="Deep Learning">
-<meta property="article:tag" content="Quantization">
-<meta property="article:tag" content="ICML 2020">
-<meta property="article:tag" content="PTQ">
-<meta property="article:tag" content="Hessian">
+<meta property="article:tag" content="Docker">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s2.loli.net/2022/03/24/qEkeOoxwPCYh4u9.png">
 
-<link rel="canonical" href="https://scxs1388.github.io/2022/03/12/adaround/">
+<link rel="canonical" href="https://scxs1388.github.io/sitonholy-docker-deployment/">
 
 
 <script id="page-configurations">
@@ -52,7 +67,7 @@
   };
 </script>
 
-  <title>(ICML 2020) Up or Down? Adaptive Rounding for Post Training Quantization | Real Zhang's Blog</title>
+  <title>思腾合力 Docker 部署踩坑记录 | Real Zhang's Blog</title><meta name="robots" content="noindex">
   
 
 
@@ -148,7 +163,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">13</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">10</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -158,7 +173,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">4</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">3</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -219,7 +234,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://scxs1388.github.io/2022/03/12/adaround/">
+    <link itemprop="mainEntityOfPage" href="https://scxs1388.github.io/sitonholy-docker-deployment/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -232,7 +247,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          (ICML 2020) Up or Down? Adaptive Rounding for Post Training Quantization
+          思腾合力 Docker 部署踩坑记录
         </h1>
 
         <div class="post-meta">
@@ -242,14 +257,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2022-03-12 22:44:34" itemprop="dateCreated datePublished" datetime="2022-03-12T22:44:34+08:00">2022-03-12</time>
+              <time title="创建时间：2022-03-19 18:06:27" itemprop="dateCreated datePublished" datetime="2022-03-19T18:06:27+08:00">2022-03-19</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-17 00:49:36" itemprop="dateModified" datetime="2022-03-17T00:49:36+08:00">2022-03-17</time>
+                <time title="修改时间：2022-03-24 05:14:33" itemprop="dateModified" datetime="2022-03-24T05:14:33+08:00">2022-03-24</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -257,12 +272,12 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Paper-Reading/" itemprop="url" rel="index"><span itemprop="name">Paper Reading</span></a>
+                  <a href="/categories/Technical-Sharing/" itemprop="url" rel="index"><span itemprop="name">Technical Sharing</span></a>
                 </span>
             </span>
 
           
-            <span id="/2022/03/12/adaround/" class="post-meta-item leancloud_visitors" data-flag-title="(ICML 2020) Up or Down? Adaptive Rounding for Post Training Quantization" title="阅读次数">
+            <span id="/sitonholy-docker-deployment/" class="post-meta-item leancloud_visitors" data-flag-title="思腾合力 Docker 部署踩坑记录" title="阅读次数">
               <span class="post-meta-item-icon">
                 <i class="fa fa-eye"></i>
               </span>
@@ -277,8 +292,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2022/03/12/adaround/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2022/03/12/adaround/" itemprop="commentCount"></span>
+    <a title="valine" href="/sitonholy-docker-deployment/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/sitonholy-docker-deployment/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -293,19 +308,109 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>本文提出了 AdaRound：一种自适应舍入的 PTQ 方法。文中通过实验观察指出基于 rounding-to-nearest 的量化舍入方法并不是最优的量化方法，并基于 Hessian 矩阵提出了一种使用少量校准集来自适应地学习权重量化舍入的量化方法。AdaRound 能够将 ResNet-18、MobileNet-V2 等模型量化到 4 bits，并保持较高的模型精度。</p>
-<span id="more"></span>
-
+        <span id="more"></span>
+<p><strong>注意：本文包含大量图片，建议在 WIFI 或非计费网络下浏览。</strong><br><strong>注意：本文不同图片尺寸存在较大差异，建议在较高的网页缩放比例下浏览（推荐 150%）</strong>  </p>
+<p>本文转载自：</p>
 <blockquote>
 <ul>
-<li>Title: <strong>Up or Down? Adaptive Rounding for Post Training Quantizatio</strong></li>
-<li>Venue: <strong>ICML 2020</strong></li>
-<li>Author(s): <em>Markus Nagel, Rana Ali Amjad, Mart van Baalen, Christos Louizos, Tijmen Blankevoort</em></li>
-<li>Institution(s): <em>Qualcomm AI Research</em></li>
-<li>Link(s): <a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2006.10518">arxiv:2006.10518</a></li>
+<li>Title: 顺德服务器如何使用详解</li>
+<li>Author(s): <em>Jinhui Lin</em></li>
+<li>Link(s): <a target="_blank" rel="noopener" href="https://shimo.im/docs/gXqmeYPN1wt4YZqo">shimo doc</a></li>
 </ul>
 </blockquote>
+<p>有一定删改。</p>
+<h3 id="登录顺德集群"><a href="#登录顺德集群" class="headerlink" title="登录顺德集群"></a>登录顺德集群</h3><p>登录地址：<code>http://172.16.12.140</code></p>
+<p>分析：这一步官方文档上给了两种方法，在登录 <code>http://172.16.12.140</code> 这个网站来看，两种方法的确都有效，但是 IPv6 这种方式在后续的 VSCode 连接顺德服务器的时候会出错，这个地方推荐使用代理的方式。</p>
+<p><strong>为啥要挂代理？</strong> 我认为这个 <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/157770531?from_voters_page=true">解释</a> 是很靠谱的。</p>
+<p>第一步官方给的步骤很详细了，这边直接抄一抄：</p>
+<p><img src="https://s2.loli.net/2022/03/24/qEkeOoxwPCYh4u9.png"></p>
+<p><img src="https://s2.loli.net/2022/03/24/kzhtsuPAZ9vQSno.png"></p>
+<p>tips：像如果不知道自己浏览器是啥（比如 Mac没有 <code>.exe</code> 文件，可以先不选，然后使用自己的浏览器进行连接，这样主界面自动会显示运行的软件，然后直接手动输入即可。如下：</p>
+<p><img src="https://s2.loli.net/2022/03/24/jITP4UAtDZeza6c.png"></p>
+<p>这样点击 <code>http://172.16.12.140</code> 就可以出现登录界面。</p>
+<p><img src="https://s2.loli.net/2022/03/24/kw7Iuf9TOB54QeW.png"></p>
+<h3 id="账户注册-amp-登录"><a href="#账户注册-amp-登录" class="headerlink" title="账户注册 &amp; 登录"></a>账户注册 &amp; 登录</h3><p>最简单的异步，记得喊管理员（智勇）帮忙通过一下。</p>
+<p>注册需要重点注意的信息：</p>
+<ul>
+<li><strong>用户名</strong>：用户名为名字拼音，如果冲突可以适当将部分字母大写，便于维护；</li>
+<li><strong>姓名</strong>：请填写真实姓名；</li>
+<li><strong>备注</strong>：导师团队-年级， 例如：<strong>班小娟团队研二</strong>。然后等待管理员审批。</li>
+</ul>
+<p>注册成功之后即可在登录页面进行登录。</p>
+<h3 id="作业提交"><a href="#作业提交" class="headerlink" title="作业提交"></a>作业提交</h3><ol>
+<li>点开左侧的 <strong>模型训练 &gt; 提交作业</strong>；</li>
+</ol>
+<p><img src="https://s2.loli.net/2022/03/24/DbmEoewxqgZzJdn.png"></p>
+<ol start="2">
+<li>配置相应的参数（选择镜像以及 CPU / GPU 资源）；</li>
+</ol>
+<p><img src="https://s2.loli.net/2022/03/24/GipvE5Y8PSchkIx.png"></p>
+<ol start="3">
+<li>配置相关路径映射；</li>
+</ol>
+<p><img src="https://s2.loli.net/2022/03/24/Z2e6SDdnb4qyz39.png"></p>
+<ul>
+<li>tips 1：<strong>Docker 镜像</strong> 这个地方可以使用公开的镜像，也可以使用自己 push 镜像，后面会讲如何 push。</li>
+<li>tips 2：路径映射在高级设置的存储配置里，选择添加即可，第一个别人看不见，第二个才是共享的，后续大型数据集可以放到公共的 <code>Quant</code> 里。</li>
+</ul>
+<ol start="4">
+<li>结果：提交之后就可以得到自己创建的任务 IP 地址以及各项服务的端口号。</li>
+</ol>
+<p><img src="https://s2.loli.net/2022/03/24/Z2e6SDdnb4qyz39.png"></p>
+<h3 id="通过-VSCode-连接自己的作业容器"><a href="#通过-VSCode-连接自己的作业容器" class="headerlink" title="通过 VSCode 连接自己的作业容器"></a>通过 VSCode 连接自己的作业容器</h3><p>在第三步的结果中，我们得到了目标容器的 IP 地址以及端口号，此时我们打开本地的 Proxifier 应用，在 <strong>编译器</strong> 这一栏点开 <strong>编辑</strong>，更改 <strong>Host</strong> 以及 <strong>Port</strong>。 比如我作业的 IP 是 <code>172.16.12.140</code>，SSH port 是 <code>16713</code>，那么我需要将这些信息填到对应的栏。<strong>Applications</strong> 则是手动填入 <code>ssh.exe</code> 即可，也可按照上述登陆 <code>http://172.16.12.140</code> 的方法确定 <strong>Application</strong>。</p>
+<p><img src="https://s2.loli.net/2022/03/24/mGjX1eZbP8dtr4l.png"></p>
+<p>使用本地 VSCode 连接顺德作业容器的步骤如下：</p>
+<ol>
+<li>点击 <strong>SSH TARGETS</strong> 中的 <code>+</code>，进行添加。</li>
+</ol>
+<p><img src="https://s2.loli.net/2022/03/24/I3bEjwhsWd2yJ5S.png"></p>
+<ol start="2">
+<li>使用 <strong>SSH</strong> 进行连接，输入命令如下：</li>
+</ol>
+<p><img src="https://s2.loli.net/2022/03/24/6QXbGc7JpyVjoIK.png"></p>
+<ol start="3">
+<li>连接 <code>172.16.12.140</code>：</li>
+</ol>
+<p><img src="https://s2.loli.net/2022/03/24/Y6KaxGOHdeL3B4u.png"></p>
+<ol start="4">
+<li>输入密码。</li>
+</ol>
+<p><img src="https://s2.loli.net/2022/03/24/pfEcQhGO9KC6Mud.png"></p>
+<ol start="5">
+<li>最终结果如下。即如正常使用一样。</li>
+</ol>
+<p><img src="https://s2.loli.net/2022/03/24/PCJvGM4inLElBDq.png"></p>
+<h3 id="扩展-1：如何-push-个人镜像到顺德集群"><a href="#扩展-1：如何-push-个人镜像到顺德集群" class="headerlink" title="扩展 1：如何 push 个人镜像到顺德集群"></a>扩展 1：如何 push 个人镜像到顺德集群</h3><ol>
+<li>首先 follow 这里 <a target="_blank" rel="noopener" href="http://172.16.12.140/fs-item-list/admin/%E9%9B%86%E7%BE%A4%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/%E4%BD%BF%E7%94%A8%E5%BB%BA%E8%AE%AE%E3%80%82%E8%AE%B0%E5%BE%97%E7%82%B9%E5%87%BB%E8%BF%99%E4%B8%AA%E9%93%BE%E6%8E%A5%EF%BC%8C%E7%84%B6%E5%90%8E%E5%8E%BB">http://172.16.12.140/fs-item-list/admin/集群使用说明/使用建议。记得点击这个链接，然后去</a> <code>172.16.12.140</code> 创建个人镜像项目；</li>
+<li>之后使用 docker image 来看是否有自己想要传输的 Docker 镜像以及对应的 id；</li>
+<li>如果没有的话则使用命令 <code>docker commit</code> 创建新的 Docker 镜像；</li>
+<li>如果已经有了的话，则需要使用命令 <code>docker tag</code> 修改镜像名，改成如下图的对应格式：</li>
+</ol>
+<p><img src="https://s2.loli.net/2022/03/24/IUxJuoc1bVhd69C.png"></p>
+<ol start="5">
+<li>使用命令 <code>docker login</code> 登录顺德集群的 Harbor 服务，如上图。</li>
+<li>使用命令 <code>docker push</code> 将镜像推送到顺德集群：</li>
+</ol>
+<p><img src="https://s2.loli.net/2022/03/24/IrNoFMC5SEHBltz.png"></p>
+<h3 id="扩展-2：不通过-Proxifier-使用-SSH-连接顺德作业容器"><a href="#扩展-2：不通过-Proxifier-使用-SSH-连接顺德作业容器" class="headerlink" title="扩展 2：不通过 Proxifier 使用 SSH 连接顺德作业容器"></a>扩展 2：不通过 Proxifier 使用 SSH 连接顺德作业容器</h3><h4 id="在-Linux-Windows-Mac-命令行中使用-SSH-连接顺德作业容器"><a href="#在-Linux-Windows-Mac-命令行中使用-SSH-连接顺德作业容器" class="headerlink" title="在 Linux / Windows / Mac 命令行中使用 SSH 连接顺德作业容器"></a>在 Linux / Windows / Mac 命令行中使用 SSH 连接顺德作业容器</h4><p>SSH 中提供了 <code>ProxyCommand</code> 选项来灵活地利用任意代理机制与远程的 SSH Server 建立连接。在顺德 socks5 代理服务器 IP 及端口已知的情况下，我们可以通过配置 <code>ProxyCommand</code> 实现本地与顺德集群作业容器直连。  </p>
+<p>使用 <code>ProxyCommand</code> 的前提是本地安装了网络测试工具 <a target="_blank" rel="noopener" href="http://netcat.sourceforge.net/">GNU Netcat</a> 或者 <a target="_blank" rel="noopener" href="https://nmap.org/ncat/">Nmap Ncat</a>（这里只举这两个例子，其它诸如 Socat、Cryptcat 等工具不再具体介绍）。在本地命令行输入 <code>nc</code> 或 <code>ncat</code> 来检查本地是否已安装 Netcat 或 Ncat。</p>
+<ul>
+<li>使用 Netcat 连接作业容器的 SSH 命令为：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -o <span class="string">&quot;ProxyCommand=nc -X 5 -x 47.93.58.98:10757 %h %p&quot;</span> root@172.16.12.231 -p 19480</span><br></pre></td></tr></table></figure>
 
+<p><img src="https://s2.loli.net/2022/03/24/JyBlx9T2jekRSPb.png"></p>
+<ul>
+<li>使用 Ncat 连接作业容器的 SSH 命令为：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -o <span class="string">&quot;ProxyCommand=ncat --proxy-type socks5 --proxy 47.93.58.98:10757 %h %p&quot;</span> root@172.16.12.231 -p 19480</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2022/03/24/ti9RMZvdTglEsAJ.png"></p>
+<p>其中 <code>47.93.58.98:10757</code> 是顺德 socks5 代理 IP 地址:端口，命令后的 <code>root@172.16.12.231 -p 19480</code> 与步骤三中的相同。</p>
+<h4 id="在-VSCode-中使用-SSH-连接顺德作业容器"><a href="#在-VSCode-中使用-SSH-连接顺德作业容器" class="headerlink" title="在 VSCode 中使用 SSH 连接顺德作业容器"></a>在 VSCode 中使用 SSH 连接顺德作业容器</h4><p>在 VSCode 中使用 SSH 连接顺德作业容器的方法和在命令行中的方法基本相同。使用 <code>ctrl</code> + <code>shift</code> + <code>p</code> 呼出命令输入框，然后输入 SSH 命令即可连接。也可在 <code>~/.ssh/config</code> 文件中添加配置后直连（每次更换作业容器时只需要修改 <code>HostName</code> 和 <code>Port</code> ）。</p>
+<p><code>config</code> 文件增加的配置示例如下（<code>ProxyCommand</code> 根据本地工具二选一即可）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Host ShunDe  <span class="comment"># ssh 命令后的 Host，可随意设置</span></span><br><span class="line">  HostName 172.16.12.140  <span class="comment"># 作业容器 Host，需要更改</span></span><br><span class="line">  Port 22  <span class="comment"># 作业容器 SSH Port，需要更改</span></span><br><span class="line">  User root  <span class="comment"># 用户名，默认 root</span></span><br><span class="line">  PreferredAuthentications password</span><br><span class="line">  </span><br><span class="line">  ProxyCommand ncat --proxy-type socks5 --proxy 47.93.58.98:10757 %h %p  <span class="comment"># 使用 ncat 的代理命令</span></span><br><span class="line">  ProxyCommand nc -X 5 -x 47.93.58.98:10757 %h %p  <span class="comment"># 使用 nc 的代理命令</span></span><br></pre></td></tr></table></figure>
+<!-- flag of hidden posts -->
     </div>
 
     
@@ -320,7 +425,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="https://scxs1388.github.io/2022/03/12/adaround/" title="(ICML 2020) Up or Down? Adaptive Rounding for Post Training Quantization">https://scxs1388.github.io/2022/03/12/adaround/</a>
+    <a href="https://scxs1388.github.io/sitonholy-docker-deployment/" title="思腾合力 Docker 部署踩坑记录">https://scxs1388.github.io/sitonholy-docker-deployment/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -332,24 +437,13 @@
       <footer class="post-footer">
           
           <div class="post-tags">
-              <a href="/tags/Deep-Learning/" rel="tag"><i class="fa fa-tag"></i> Deep Learning</a>
-              <a href="/tags/Quantization/" rel="tag"><i class="fa fa-tag"></i> Quantization</a>
-              <a href="/tags/ICML-2020/" rel="tag"><i class="fa fa-tag"></i> ICML 2020</a>
-              <a href="/tags/PTQ/" rel="tag"><i class="fa fa-tag"></i> PTQ</a>
-              <a href="/tags/Hessian/" rel="tag"><i class="fa fa-tag"></i> Hessian</a>
+              <a href="/tags/Docker/" rel="tag"><i class="fa fa-tag"></i> Docker</a>
           </div>
 
         
 
 
         
-    <div class="post-nav">
-      <div class="post-nav-item">
-    <a href="/2021/12/04/break-md5/" rel="prev" title="How to Break MD5 and Other Hash Functions">
-      <i class="fa fa-chevron-left"></i> How to Break MD5 and Other Hash Functions
-    </a></div>
-      <div class="post-nav-item"></div>
-    </div>
       </footer>
     
   </article>
@@ -408,6 +502,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%99%BB%E5%BD%95%E9%A1%BA%E5%BE%B7%E9%9B%86%E7%BE%A4"><span class="nav-number">1.</span> <span class="nav-text">登录顺德集群</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B4%A6%E6%88%B7%E6%B3%A8%E5%86%8C-amp-%E7%99%BB%E5%BD%95"><span class="nav-number">2.</span> <span class="nav-text">账户注册 &amp; 登录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%9C%E4%B8%9A%E6%8F%90%E4%BA%A4"><span class="nav-number">3.</span> <span class="nav-text">作业提交</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E8%BF%87-VSCode-%E8%BF%9E%E6%8E%A5%E8%87%AA%E5%B7%B1%E7%9A%84%E4%BD%9C%E4%B8%9A%E5%AE%B9%E5%99%A8"><span class="nav-number">4.</span> <span class="nav-text">通过 VSCode 连接自己的作业容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%A9%E5%B1%95-1%EF%BC%9A%E5%A6%82%E4%BD%95-push-%E4%B8%AA%E4%BA%BA%E9%95%9C%E5%83%8F%E5%88%B0%E9%A1%BA%E5%BE%B7%E9%9B%86%E7%BE%A4"><span class="nav-number">5.</span> <span class="nav-text">扩展 1：如何 push 个人镜像到顺德集群</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%A9%E5%B1%95-2%EF%BC%9A%E4%B8%8D%E9%80%9A%E8%BF%87-Proxifier-%E4%BD%BF%E7%94%A8-SSH-%E8%BF%9E%E6%8E%A5%E9%A1%BA%E5%BE%B7%E4%BD%9C%E4%B8%9A%E5%AE%B9%E5%99%A8"><span class="nav-number">6.</span> <span class="nav-text">扩展 2：不通过 Proxifier 使用 SSH 连接顺德作业容器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9C%A8-Linux-Windows-Mac-%E5%91%BD%E4%BB%A4%E8%A1%8C%E4%B8%AD%E4%BD%BF%E7%94%A8-SSH-%E8%BF%9E%E6%8E%A5%E9%A1%BA%E5%BE%B7%E4%BD%9C%E4%B8%9A%E5%AE%B9%E5%99%A8"><span class="nav-number">6.1.</span> <span class="nav-text">在 Linux &#x2F; Windows &#x2F; Mac 命令行中使用 SSH 连接顺德作业容器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9C%A8-VSCode-%E4%B8%AD%E4%BD%BF%E7%94%A8-SSH-%E8%BF%9E%E6%8E%A5%E9%A1%BA%E5%BE%B7%E4%BD%9C%E4%B8%9A%E5%AE%B9%E5%99%A8"><span class="nav-number">6.2.</span> <span class="nav-text">在 VSCode 中使用 SSH 连接顺德作业容器</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -423,7 +518,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-count">3</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -436,7 +531,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
