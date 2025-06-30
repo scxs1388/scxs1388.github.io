@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/1AU4@TV694DZ7QW0MVVX7.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/1AU4@TV694DZ7QW0MVVX7.jpg">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Roboto:300,300italic,400,400italic,700,700italic|Source Code Pro:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"scxs1388.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":"default","style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.json"};
+  </script>
+
+  <meta name="description" content="本文提出了 Training Quantization Thresholds (TQT)：一种基于 QAT 的学习均匀、对称、Per-tensor 量化器的截断阈值的方法。TQT 在训练时使用了 STE ，并将量化步长限制在了 Power-of-Two，采用 PoT 形式的量化步长在推理时仅使用整型加法和移位运算，利于硬件部署。本文对 TQT 的鲁棒性进行了数学分析，并在多个 CNN 上进行了 I">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(MLSys 2020) TQT - Trained Quantization Thresholds for Accurate and Efficient Fix-point Inference of Deep Neural Networks">
+<meta property="og:url" content="http://scxs1388.github.io/2021/12/02/tqt/index.html">
+<meta property="og:site_name" content="I have tried my best to make this look like the title of a HYPERFLIP song, but it is still not long enough.">
+<meta property="og:description" content="本文提出了 Training Quantization Thresholds (TQT)：一种基于 QAT 的学习均匀、对称、Per-tensor 量化器的截断阈值的方法。TQT 在训练时使用了 STE ，并将量化步长限制在了 Power-of-Two，采用 PoT 形式的量化步长在推理时仅使用整型加法和移位运算，利于硬件部署。本文对 TQT 的鲁棒性进行了数学分析，并在多个 CNN 上进行了 I">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2021/12/02/Q3jUlOMsLCuPwvE.png">
+<meta property="og:image" content="https://i.loli.net/2021/12/02/5jg4SBlJTN6yupL.png">
+<meta property="og:image" content="https://i.loli.net/2021/12/02/kc2vn8GVz4ZIAHj.png">
+<meta property="og:image" content="https://i.loli.net/2021/12/03/JAiCtqHT9Pu5sQM.png">
+<meta property="og:image" content="https://i.loli.net/2021/12/03/McviHZDa6btCxso.png">
+<meta property="og:image" content="https://i.loli.net/2021/12/03/KjP3lmHtBgifpFw.png">
+<meta property="og:image" content="https://i.loli.net/2021/12/03/ZGzOqthfEnCeb3s.png">
+<meta property="article:published_time" content="2021-12-02T06:53:37.000Z">
+<meta property="article:modified_time" content="2022-03-23T20:13:51.000Z">
+<meta property="article:author" content="scxs1388">
+<meta property="article:tag" content="Deep Learning">
+<meta property="article:tag" content="Quantization">
+<meta property="article:tag" content="MLSys 2020">
+<meta property="article:tag" content="QAT">
+<meta property="article:tag" content="STE">
+<meta property="article:tag" content="Integer Only">
+<meta property="article:tag" content="Symmetric">
+<meta property="article:tag" content="Uniform">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2021/12/02/Q3jUlOMsLCuPwvE.png">
+
+<link rel="canonical" href="http://scxs1388.github.io/2021/12/02/tqt/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>(MLSys 2020) TQT - Trained Quantization Thresholds for Accurate and Efficient Fix-point Inference of Deep Neural Networks | I have tried my best to make this look like the title of a HYPERFLIP song, but it is still not long enough.</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<script src="/live2d-widget/dist/autoload.js"></script>
+<script>
+/* parallax.js */
+document.addEventListener('DOMContentLoaded', () => {
+  const bg = document.getElementById('parallax-bg');
+  const intensity = 16; // 控制移动幅度（值越大移动越明显）
+
+  window.addEventListener('mousemove', (e) => {
+    const x = (e.clientX / window.innerWidth - 0.5) * intensity;
+    const y = (e.clientY / window.innerHeight - 0.5) * intensity;
+    bg.style.transform = `translate(${-x}px, ${-y}px)`;
+  });
+});
+</script>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="parallax-background" id="parallax-bg"></div>
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">I have tried my best to make this look like the title of a HYPERFLIP song, but it is still not long enough.</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">12</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">1</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">4</span></a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/scxs1388" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://scxs1388.github.io/2021/12/02/tqt/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/37069157.jpg">
+      <meta itemprop="name" content="scxs1388">
+      <meta itemprop="description" content="Suffering from acute coke overdose">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="I have tried my best to make this look like the title of a HYPERFLIP song, but it is still not long enough.">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          (MLSys 2020) TQT - Trained Quantization Thresholds for Accurate and Efficient Fix-point Inference of Deep Neural Networks
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-12-02 14:53:37" itemprop="dateCreated datePublished" datetime="2021-12-02T14:53:37+08:00">2021-12-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-24 04:13:51" itemprop="dateModified" datetime="2022-03-24T04:13:51+08:00">2022-03-24</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Paper-Reading/" itemprop="url" rel="index"><span itemprop="name">Paper Reading</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2021/12/02/tqt/" class="post-meta-item leancloud_visitors" data-flag-title="(MLSys 2020) TQT - Trained Quantization Thresholds for Accurate and Efficient Fix-point Inference of Deep Neural Networks" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/12/02/tqt/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/12/02/tqt/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>20 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本文提出了 Training Quantization Thresholds (TQT)：一种基于 QAT 的学习均匀、对称、Per-tensor 量化器的截断阈值的方法。TQT 在训练时使用了 STE ，并将量化步长限制在了 Power-of-Two，采用 PoT 形式的量化步长在推理时仅使用整型加法和移位运算，利于硬件部署。本文对 TQT 的鲁棒性进行了数学分析，并在多个 CNN 上进行了 ImageNet 图像分类任务。实验结果表明：TQT 在 MobileNet 等之前较难量化的神经网络上在少于 5 epochs 的训练就达到了接近浮点的精度。本文相关 Github 项目：<a target="_blank" rel="noopener" href="https://www.github.com/Xilinx/graffitist">Graffitist</a></p>
+<span id="more"></span>
+<!-- ([local PDF](./quantization/1807.10029.pdf)) -->
+<blockquote>
+<ul>
+<li>Title: <strong>Trained Quantization Thresholds for Accurate and Efficient Fix-point Inference of Deep Neural Networks</strong></li>
+<li>Venue: <strong>MLSys 2020</strong></li>
+<li>Author(s): <em>Sambhav R. Jain, Albert Gural, Michael Wu, Chris H. Dick</em></li>
+<li>Institution(s): <em>Xilinx Inc, Stanford University</em></li>
+<li>Link(s): <a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1903.08066.pdf">arxiv:1903.08066</a></li>
+<li>Project(s): <a target="_blank" rel="noopener" href="https://www.github.com/Xilinx/graffitist">Graffitist</a>, <a target="_blank" rel="noopener" href="https://github.com/Xilinx/Vitis-AI/tree/master/tools/Vitis-AI-Quantizer/vai_q_pytorch">Vitis-AI</a></li>
+</ul>
+</blockquote>
+<h3 id="Introduction">Introduction</h3>
+<p>本文主要关注以下三个问题：</p>
+<ol>
+<li>之前的量化工作大部分是基于 PTQ 的静态量化，即对预训练模型进行校准得到的截断阈值在之后保持固定不变，相比 QAT 方法得到的量化截断阈值的泛化能力更差。</li>
+<li>PTQ 校准中定义的 Per-Tensor 或 Per-Channel 的 Quantization Error 所用的 Metrics (KLD、MSE等) 都是基于经验设计的。这些 Metrics 与模型最终的 Loss 是否存在相关性，现在业界依然没有理论上的数学证明。相比起那些优化人工给定的 Metrics 的 PTQ 方法，使用 Training-based 的方法更有效，在理论上也更有说服力。</li>
+<li>2018 年 Google 的论文提出的 Integer-Only Inference 量化方案中的比例系数 M 是 dyadic 型的参数而非 PoT 型的参数，会存在一定的高位整型数存储和乘法运算，这会对硬件的存储和运算造成负担。更理想的全整型推理量化方案将量化步长限制在 PoT 的形式，这样可以完全用移位来代替量化步长的乘法运算，更利于硬件加速和实现。</li>
+</ol>
+<h3 id="Related-Works">Related Works</h3>
+<ul>
+<li>STE <a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1308.3432">arxiv:1308.3432</a></li>
+<li>Integer-Arithmetic-Only Inference (CVPR 2018) <a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1712.05877">arxiv:1712.05877</a></li>
+<li>PACT <a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1805.06085">arxiv:1805.06085</a></li>
+<li>LSQ (ICLR 2020) <a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1902.08153">arxiv:1902.08153</a></li>
+</ul>
+<h3 id="Trained-Quantization-Thresholds-TQT">Trained Quantization Thresholds (TQT)</h3>
+<h4 id="Quantizer-Constraints">Quantizer Constraints</h4>
+<p>TQT 的采用的均匀量化公式如下：<br>
+$$<br>
+r=s·(q-z)<br>
+\tag{2}<br>
+$$<br>
+其中 $s$ 为量化步长，$z$ 为量化零点，$q$ 为量化后的整型数值。为了简化量化运算，TQT采用了对称量化，令 $z=0$ 省略多项式乘法中含量化零点的展开项：<br>
+$$<br>
+r=s·q<br>
+\tag{3}<br>
+$$<br>
+同时，TQT 要求量化步长 $s$ 限制为 PoT 的形式，即 $s=2^{-f}$，其中 $f$ 为fractional length，可以理解为浮点数小数点的位置，是一个有符号整型数。这样在计算 $r=s·q$ 时就可以用移位运算代替乘法运算。</p>
+<h4 id="Forward-Pass">Forward Pass</h4>
+<p>TQT 完整的量化前向计算包含缩放 (Scaling)、取整 (Rounding)、截断 (Saturation)、反量化 (De-quant) 四个计算步骤，量化函数如下：<br>
+$$<br>
+q(x;s)=\text{clip} \left( \left\lfloor \frac{x}{s} \right\rceil ;n,p \right)·s<br>
+\tag{4}<br>
+$$<br>
+其中 $q(x;s)$ 表示量化函数，$x$ 表示输入 Tensor，$s$ 表示量化步长，$\text{clip}$ 表示区间限定函数，$n$ 和 $p$ 分别为区间上下界。<br>
+量化参数取值根据输入 Tensor 是否有符号决定。</p>
+<ul>
+<li>输入为有符号数 (signed)：<br>
+$$<br>
+n=-2^{b-1}, p=2^{b-1}-1, s=\frac{2^{\left\lceil \text{log}_2\thinspace t \right\rceil}}{2^{b-1}}<br>
+$$</li>
+<li>输入为无符号数 (unsigned)：<br>
+$$<br>
+n=0, p=2^b-1, s=\frac{2^{\left\lceil \text{log}_2\thinspace t \right\rceil}}{2^b}<br>
+$$<br>
+其中 $t$ 是原始的量化截断阈值，实际上的量化截断阈值的取值是大于 $t$ 的最小的 PoT 型数值 $2^{\left\lceil \text{log}_2\thinspace t \right\rceil}$。</li>
+</ul>
+<h4 id="Backward-Pass">Backward Pass</h4>
+<p>TQT 在训练过程中同时优化输入 $x$ 和量化步长 $s$。为了更方便表示反向传播的梯度，可以改写前向传播的量化函数中的 $\text{clip}$ 函数成为如下的分段函数形式：<br>
+$$<br>
+q(x;s)=<br>
+\left\lbrace<br>
+\begin{aligned}<br>
+&amp; \left\lfloor \frac{x}{s} \right\rceil ·s &amp;&amp; \text{if } n\leq\left\lfloor \frac{x}{s} \right\rceil \leq p, \\<br>
+&amp; n·s &amp;&amp; \text{if } \left\lfloor \frac{x}{s} \right\rceil &lt; n, \\<br>
+&amp; p·s &amp;&amp; \text{if } \left\lfloor \frac{x}{s} \right\rceil &gt; p. \\<br>
+\end{aligned}<br>
+\right.<br>
+\tag{5}<br>
+$$<br>
+在进行反向传播时，TQT 对不可反向传播的取整运算采用了 STE，即对于 $\left\lceil x \right\rceil \neq x, \left\lfloor x \right\rfloor \neq x,  \left\lfloor x \right\rceil \neq x$ 的情况时，令$\frac{\partial \left\lceil x \right\rceil}{\partial x} = \frac{\partial \left\lfloor x \right\rfloor}{\partial x} = \frac{\partial \left\lfloor x \right\rceil}{\partial x} = 1$。<br>
+这样得到的量化函数 $q$ 关于 $x$ 和 $s$ 的梯度如下：<br>
+$$<br>
+\nabla_s q(x;s)=<br>
+\left\lbrace<br>
+\begin{aligned}<br>
+&amp; \left\lfloor \frac{x}{s} \right\rceil - \frac{x}{s} &amp;&amp; \text{if } n\leq\left\lfloor \frac{x}{s} \right\rceil \leq p, \\<br>
+&amp; n &amp;&amp; \text{if } \left\lfloor \frac{x}{s} \right\rceil &lt; n, \\<br>
+&amp; p &amp;&amp; \text{if } \left\lfloor \frac{x}{s} \right\rceil &gt; p. \\<br>
+\end{aligned}<br>
+\right.<br>
+\tag{6}<br>
+$$<br>
+注意到 $\nabla_{\text{log}_2 \thinspace t} s=s \text{ ln}(2)$，上式可继续转化为：<br>
+$$<br>
+\nabla _{\text{log}_2\thinspace t} q(x;s)=s \text{ ln}(2)·<br>
+\left\lbrace<br>
+\begin{aligned}<br>
+&amp; \left\lfloor \frac{x}{s} \right\rceil - \frac{x}{s} &amp;&amp; \text{if } n\leq\left\lfloor \frac{x}{s} \right\rceil \leq p, \\<br>
+&amp; n &amp;&amp; \text{if } \left\lfloor \frac{x}{s} \right\rceil &lt; n, \\<br>
+&amp; p &amp;&amp; \text{if } \left\lfloor \frac{x}{s} \right\rceil &gt; p. \\<br>
+\end{aligned}<br>
+\right.<br>
+\tag{7}<br>
+$$<br>
+同理，输入 $x$ 的梯度如下：<br>
+$$<br>
+\nabla _x q(x;s)=<br>
+\left\lbrace<br>
+\begin{aligned}<br>
+&amp; 1 &amp;&amp; \text{if } n \leq \left\lfloor \frac{x}{s} \right\rceil \leq p, \\<br>
+&amp; 0 &amp;&amp; \text{otherwise} \\<br>
+\end{aligned}<br>
+\right.<br>
+\tag{8}<br>
+$$</p>
+<h4 id="Interpretation-of-Gradients">Interpretation of Gradients</h4>
+<p>上面给出了量化器 $q$ 对 $x$ 和 $\text{log}_2 \thinspace t$ 的梯度公式，为了直观地理解量化器在 QAT 反向传播时梯度的变化情况，不妨考虑下面这样一个简单的场景：<br>
+使用最小平方误差 (least-square error) L2损失函数 $L = (q(x;s) - x)^2/2$ 优化一个 TQT 量化器，$L$ 对 $x$ 和 $\text{log}_2 \thinspace t$ 的梯度如下：<br>
+$$<br>
+\begin{align}<br>
+\nabla _{\text{log}_2 \thinspace t} L &amp;= (q(x;s) - x) · \nabla _{\text{log}_2 \thinspace t} q(x;s) \tag{9}\\<br>
+\nabla _x L &amp;= (q(x;s) - x) · (\nabla _x q(x;s) - 1) \tag{10}\\<br>
+\end{align}<br>
+$$</p>
+<div align=center>
+<img data-src="https://i.loli.net/2021/12/02/Q3jUlOMsLCuPwvE.png" style="zoom: 40%;">
+<strong>Figure 1</strong>
+</div>
+<p>Figure 1 展示了在 $b=3, t=1.0$ 时有符号和无符号情况下函数值和各参数梯度的变化曲线。第一行为量化函数，第二行为损失函数。<br>
+考虑到取整 $\left\lfloor · \right\rceil$ 函数和截断 $\text{clip}$ 函数的共同作用，实际上输入 $x$ 的真实范围为 $[s·(n-0.5), s·(p+0.5)]$。从Figure 1可以看出：</p>
+<ul>
+<li>当输入 $x$ 在真实范围内时，$L$ 对 $\text{log}_2 \thinspace t$ 的梯度非负，对 $x$ 的梯度为 $0$；</li>
+<li>当输入 $x$ 在真实范围外时，$L$ 对 $\text{log}_2 \thinspace t$ 的梯度恒负，对 $x$ 的梯度左负右正。</li>
+</ul>
+<div align=center>
+    <img data-src="https://i.loli.net/2021/12/02/5jg4SBlJTN6yupL.png" style="zoom: 40%;">
+    <strong>Figure 2</strong>
+</div>
+<p>Figure 2 展示了通常情况下呈钟型分布(例如高斯分布)的输入 $x$ 的 $\text{log}_2 \thinspace t$ 梯度的变化情况：</p>
+<ul>
+<li>左图：绝大部分输入值 $x$ 都在真实范围内，对 $\text{log}_2 \thinspace t$ 的累计梯度为正，梯度下降更新使得 $\text{log}_2 \thinspace t$ 减小向分布中心靠近；</li>
+<li>中间图：对于在真实范围外的输入，其对 $\text{log}_2 \thinspace t$ 的累计梯度为负，梯度下降使 $\text{log}_2 \thinspace t$ 向外扩大。</li>
+<li>右图：训练收敛时，正负梯度相加为零，此时的截断阈值满足 PoT 型且能够使模型精度损失尽可能低。</li>
+</ul>
+<p>TQT 在 QAT 过程中同时优化输入 $x$。与对截断阈值梯度的分析类似：</p>
+<ul>
+<li>当输入 $x$ 在真实范围内时，$L$ 对 $x$ 的梯度为 $0$，即截断范围内输入保持不变；</li>
+<li>当输入 $x$ 在真实范围外时，$L$ 对 $x$ 的梯度左负右正。<br>
+这表明，对于范围外的输入 $x$，梯度下降更新使得输入 $x$ 向范围内变化，使 $x$ 越来越趋向分布中心，减少分布中的离群点。</li>
+</ul>
+<h4 id="Comparison-to-Clipped-Threshold-Gradients">Comparison to Clipped Threshold Gradients</h4>
+<ul>
+<li>与 TensorFlow 的 FakeQuant 的比较</li>
+</ul>
+<div align=center>
+    <img data-src="https://i.loli.net/2021/12/02/kc2vn8GVz4ZIAHj.png" style="zoom: 40%;">
+    <strong>Figure 3</strong>
+</div>
+<p>TensorFlow 框架的伪量化模块 FakeQuant 参考的量化函数如下：<br>
+$$<br>
+q(x;n,p)=\left\lfloor \frac{\text{clip}(x;n,p)-n}{\frac{p-n}{2^b-1}} \right\rceil · \frac{p-n}{2^b-1} + n<br>
+\tag{11}<br>
+$$<br>
+Figure 3 展示了在 $b=3, n=-1.125, p=0.875$ 时 TensorFlow 的 FakeQuant 模块的函数值和各参数梯度的变化曲线。与TQT的量化方法相比，FakeQuant学习截断阈值 $n$ 和 $p$，在反向传播阶段将取整函数简化为恒等函数。由Figure 3可以看出， $n$ 和 $p$ 的梯度恒为正，因此在梯度下降更新时只能向外侧变化，这样的学习方法得到的结果更贴近于PTQ的min/max截断阈值取值，而不是在量化模型精度和截断范围之间进行trade-off。</p>
+<ul>
+<li>与 PACT 的比较</li>
+</ul>
+<p>PACT (PArameterized Clipping acTivation) 为了能够将量化截断阈值引入 QAT 训练过程中进行优化，提出了 Clipped ReLU 激活函数：<br>
+$$<br>
+y=PACT(x)=0.5(|x|-|x-\alpha|+\alpha)=<br>
+\left\lbrace<br>
+\begin{aligned}<br>
+&amp; 0, &amp;&amp; x \in (-\infty, 0) \\<br>
+&amp; x, &amp;&amp; x \in [0, \alpha) \\<br>
+&amp; \alpha, &amp;&amp; x \in [\alpha, +\infty)  \\<br>
+\end{aligned}<br>
+\right.<br>
+$$<br>
+输出激活值对截断阈值 $\alpha$ 的梯度使用 STE 近似如下：<br>
+$$<br>
+\frac{\partial y_q}{\partial \alpha} =<br>
+\left\lbrace<br>
+\begin{aligned}<br>
+&amp; 0, &amp;&amp; x \in (-\infty, \alpha) \\<br>
+&amp; 1, &amp;&amp; x \in [\alpha, +\infty) \\<br>
+\end{aligned}<br>
+\right.<br>
+\tag{1}<br>
+$$<br>
+在 PACT 方法中，$\alpha$ 的梯度只与 $x$ 取值在 $\alpha$ 的哪一侧有关，显然只有在 $\alpha$ 右侧的值能够造成影响，因此在训练过程中 $\alpha$ 会趋向于 $x$ 的右端取值的最大值。为了避免这一现象，PACT 在训练时在损失函数中加入了对 $\alpha$ 的 L2 正则项，但是 L2 正则项的超参数 $\lambda_{\alpha}$ 只能人工设定，不能自动地在 QAT 过程中进行优化，因此相比 TQT 而言略显不足。有关 PACT 的其它具体细节请查阅相关文献和阅读笔记。</p>
+<h3 id="Framework-of-TQT">Framework of TQT</h3>
+<p>本文相关的 Github 项目 Graffitist 是基于 TensorFlow 框架和 TQT 方法实现的端到端式的量化解决方案。Graffitist 支持对多种神经网络进行计算图优化和模型量化。</p>
+<h4 id="Graph-Optimizations">Graph Optimizations</h4>
+<p>Graffitist 实现了多种对计算图的优化方式。包括 Fuse-BN、多重 concat 拆分成单一 concat、将平均池化层转化为深度卷积层等等。</p>
+<h4 id="Quantization-Modes">Quantization Modes</h4>
+<p>Graffitist 实现了多种量化模式，包括 PTQ 的静态量化模式和 QAT 的量化模式。</p>
+<h4 id="Layer-Precisions">Layer Precisions</h4>
+<p>Graffitist 分别实现了针对计算层、激活层、平均池化层和 concat 操作的量化计算位数设计。</p>
+<h4 id="Fused-Kernel-Implementation">Fused Kernel Implementation</h4>
+<p>Graffitist 中打包了为 CPU/GPU 预编译的融合后的量化内核。经过融合后的量化器占用内存低，从而可以使用更大的 batch size 来实现加速。</p>
+<h3 id="Experiments">Experiments</h3>
+<p>此处只展示实验结果。省略了实验的初始化和实现细节，具体细节请参看原论文。</p>
+<h4 id="Results">Results</h4>
+<div align=center>
+    <img data-src="https://i.loli.net/2021/12/03/JAiCtqHT9Pu5sQM.png" style="zoom: 40%;">
+    <strong>Table 3</strong>
+</div>
+Table 3 展示了对 12 种不同的神经网络模型在 ImageNet 分类任务上的验证准确率。wt 表示只训练模型权重参数，wt,th 表示模型权重和截断阈值同时训练。所有再训练过程均不超过5 epochs。
+<h3 id="Discussion">Discussion</h3>
+<h4 id="Insights-from-TQT">Insights from TQT</h4>
+<p>本文观察到了关于 TQT 的一些值得注意的实验现象：</p>
+<ul>
+<li>QAT 方法得到的模型预测精度比 PTQ 静态量化的更高，这也是期望之中的结果。</li>
+<li>对于 VGG、Inception、ResNet 等 INT8 量化难度较低的模型，固定截断阈值只对模型参数进行再训练的效果已经足够好了，此时也采用 TQT 方法也没有更多精度上的提升。</li>
+<li>对于 MobileNet、DarkNet 等 INT8 量化难度较高的模型，同时训练模型参数与截断阈值要比只训练模型参数的精度高 $4 \%$，甚至接近 FP32 模型的精度。</li>
+<li>对于更低比特的 INT4 量化，只训练模型参数已经很难提升精度了，因此 INT4 量化必须使用 TQT 方法才能有效维持模型精度。</li>
+</ul>
+<h4 id="MobileNet-Comparisons">MobileNet Comparisons</h4>
+<div align=center>
+    <img data-src="https://i.loli.net/2021/12/03/McviHZDa6btCxso.png" style="zoom: 40%;">
+    <strong>Table 1</strong>
+</div>
+对于较难量化的 MobileNet，先前的大量研究已经表明：采用简单的对称、per-tensor 的 PTQ 方法去量化 MobileNet 通常是 detrimental 的。其中一个主要的原因是深度可分离卷积层的权重数值分布是不规则的且不同通道间的数值范围差异很大。然而，使用 TQT (wt,th) 方法对 MobileNet 进行 QAT 的结果已经达到了 FP32 的精度。这里简单地与 Google 的 QAT 结果进行对比，对比结果如 Table 1 所示。尽管 TQT 对量化步长的约束比 Google 的方法更为严格，但是量化后精度却更高，这也体现了 TQT 方法的优越性。
+<div align=center>
+    <img data-src="https://i.loli.net/2021/12/03/KjP3lmHtBgifpFw.png" style="zoom: 30%;">
+    <strong>Figure 5</strong>
+</div>
+Figure 5 中展示了使用 TQT 方法进行 QAT 再训练的 MobileNet v1 前后模型权重参数分布情况。从图中可以体现出量化截断阈值在截断范围和模型精度的 trade-off 的重要性。
+<div align=center>
+    <img data-src="https://i.loli.net/2021/12/03/ZGzOqthfEnCeb3s.png" style="zoom: 40%;">
+    <strong>Figure 6</strong>
+</div>
+Figure 6 中展示了 INT8 和 INT4 量化不同模型所有层的 fractional length 的始末差异分布情况。可以发现 INT8 量化比起 INT4 量化 fractional length 的变化程度更大，这也与 TQT 方法本身的特点有关系：在能够表示的比特位较多时，该方法会更偏向于扩大截断范围；相反，当比特位较少时，截断范围的扩大和模型精度的 trade-off 更加明显。
+<h3 id="Conclusion">Conclusion</h3>
+<p>本文提出了一种通用的学习量化截断阈值的方法 TQT。其特性如下：</p>
+<ul>
+<li>TQT 方法能够将量化步长限制在 PoT 型数值，适用于大多数支持定点运算的硬件。</li>
+<li>TQT 学习量化截断阈值的过程能够体现出截断范围和模型精度的 trade-off，并在 INT8 和 INT4 量化中取得很高的精度。</li>
+<li>TQT 方法具有鲁棒性和快速收敛性等特点。</li>
+</ul>
+<p>此外，本文就 TQT 方法基于 TensorFlow 上建立了 Graffitist 项目，并基于 ImageNet 图像分类任务对多个经典模型进行量化实验，最后，本文就某些值得关注的实验现象进行阐述。</p>
+<h3 id="Appendices">Appendices</h3>
+<p>本文的附录内容简单总结如下：</p>
+<h4 id="A-Cost-of-Affine-Quantizer">A Cost of Affine Quantizer</h4>
+<p>本节主要对量化器的计算开销进行分析讨论。<br>
+附录 A.1 对量化乘法运算进行详细分析，表明忽略量化零点 $Z$ 后可以有效地降低量化计算复杂度。<br>
+附录 A.2 分析了浮点型、dyadic 型和 PoT 型量化步长的乘法运算，其中dyadic型详见Google论文，PoT型可以直接使用移位运算代替乘法运算。</p>
+<h4 id="B-Log-Threshold-Training">B Log Threshold Training</h4>
+<p>本节主要针对QAT过程进行分析，主要从数值稳定性、尺度不变性和收敛性三个方面进行讨论分析。<br>
+附录B.1分析训练的数值稳定性(Numeral Stability)。比起训练范围受限的原始截断阈值 $t \in \mathbb{R}^+$，不如直接训练 $\text{log} _2 \thinspace t \in \mathbb{R}$，并且 $\text{log}$ 函数的形式与PoT型正好吻合。<br>
+附录B.2分析训练的尺度不变性(Scale Invariance)，也就是说其梯度应该尽量与其取值大小无关，而只与其它因素有关。<br>
+附录B.3分析训练的收敛性(Convergence)，并给出了不同比特位下Adam优化器的参数取值参考。</p>
+<h4 id="C-Adam-Convergence">C Adam Convergence</h4>
+<p>本节主要针对TQT在Adam优化器上的收敛性进行详细分析。</p>
+<h4 id="D-Best-or-Mean-Validation">D Best or Mean Validation</h4>
+<p>本节主要针对该工作的实验结果筛选进行解释。本文在MobileNetV1和VGG16上的1000次验证平均准确率与最高准确率的差距分别为 $0.1\%$ 和 $0.2\%$，表明结果的真实性和可靠性。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>scxs1388
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://scxs1388.github.io/2021/12/02/tqt/" title="(MLSys 2020) TQT - Trained Quantization Thresholds for Accurate and Efficient Fix-point Inference of Deep Neural Networks">http://scxs1388.github.io/2021/12/02/tqt/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/Deep-Learning/" rel="tag"><i class="fa fa-tag"></i> Deep Learning</a>
+              <a href="/tags/Quantization/" rel="tag"><i class="fa fa-tag"></i> Quantization</a>
+              <a href="/tags/MLSys-2020/" rel="tag"><i class="fa fa-tag"></i> MLSys 2020</a>
+              <a href="/tags/QAT/" rel="tag"><i class="fa fa-tag"></i> QAT</a>
+              <a href="/tags/STE/" rel="tag"><i class="fa fa-tag"></i> STE</a>
+              <a href="/tags/Integer-Only/" rel="tag"><i class="fa fa-tag"></i> Integer Only</a>
+              <a href="/tags/Symmetric/" rel="tag"><i class="fa fa-tag"></i> Symmetric</a>
+              <a href="/tags/Uniform/" rel="tag"><i class="fa fa-tag"></i> Uniform</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/09/01/hello-hexo/" rel="prev" title="Hello Hexo">
+      <i class="fa fa-chevron-left"></i> Hello Hexo
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/12/04/break-md5/" rel="next" title="How to Break MD5 and Other Hash Functions">
+      How to Break MD5 and Other Hash Functions <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction"><span class="nav-number">1.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Related-Works"><span class="nav-number">2.</span> <span class="nav-text">Related Works</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Trained-Quantization-Thresholds-TQT"><span class="nav-number">3.</span> <span class="nav-text">Trained Quantization Thresholds (TQT)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Quantizer-Constraints"><span class="nav-number">3.1.</span> <span class="nav-text">Quantizer Constraints</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Forward-Pass"><span class="nav-number">3.2.</span> <span class="nav-text">Forward Pass</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Backward-Pass"><span class="nav-number">3.3.</span> <span class="nav-text">Backward Pass</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Interpretation-of-Gradients"><span class="nav-number">3.4.</span> <span class="nav-text">Interpretation of Gradients</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Comparison-to-Clipped-Threshold-Gradients"><span class="nav-number">3.5.</span> <span class="nav-text">Comparison to Clipped Threshold Gradients</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Framework-of-TQT"><span class="nav-number">4.</span> <span class="nav-text">Framework of TQT</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Graph-Optimizations"><span class="nav-number">4.1.</span> <span class="nav-text">Graph Optimizations</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Quantization-Modes"><span class="nav-number">4.2.</span> <span class="nav-text">Quantization Modes</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Layer-Precisions"><span class="nav-number">4.3.</span> <span class="nav-text">Layer Precisions</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Fused-Kernel-Implementation"><span class="nav-number">4.4.</span> <span class="nav-text">Fused Kernel Implementation</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Experiments"><span class="nav-number">5.</span> <span class="nav-text">Experiments</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Results"><span class="nav-number">5.1.</span> <span class="nav-text">Results</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Discussion"><span class="nav-number">6.</span> <span class="nav-text">Discussion</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Insights-from-TQT"><span class="nav-number">6.1.</span> <span class="nav-text">Insights from TQT</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#MobileNet-Comparisons"><span class="nav-number">6.2.</span> <span class="nav-text">MobileNet Comparisons</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Conclusion"><span class="nav-number">7.</span> <span class="nav-text">Conclusion</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Appendices"><span class="nav-number">8.</span> <span class="nav-text">Appendices</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#A-Cost-of-Affine-Quantizer"><span class="nav-number">8.1.</span> <span class="nav-text">A Cost of Affine Quantizer</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#B-Log-Threshold-Training"><span class="nav-number">8.2.</span> <span class="nav-text">B Log Threshold Training</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#C-Adam-Convergence"><span class="nav-number">8.3.</span> <span class="nav-text">C Adam Convergence</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#D-Best-or-Mean-Validation"><span class="nav-number">8.4.</span> <span class="nav-text">D Best or Mean Validation</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="scxs1388"
+      src="/images/37069157.jpg">
+  <p class="site-author-name" itemprop="name">scxs1388</p>
+  <div class="site-description" itemprop="description">Suffering from acute coke overdose</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/scxs1388" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;scxs1388" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:scxs138@gmail.com" title="E-Mail → mailto:scxs138@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2021 – 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">scxs1388</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">24k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">2:01</span>
+
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+    <!-- 从这里开始添加代码 -->
+    <span class="post-meta-divider">|</span>
+    <span id="sitetime" class="post-meta-item"></span>
+    <script>
+        function siteTime(){
+        window.setTimeout("siteTime()", 1000);
+        var seconds = 1000;
+        var minutes = seconds * 60;
+        var hours = minutes * 60;
+        var days = hours * 24;
+        var years = days * 365;
+        var today = new Date();
+        var todayYear = today.getFullYear();
+        var todayMonth = today.getMonth()+1;
+        var todayDate = today.getDate();
+        var todayHour = today.getHours();
+        var todayMinute = today.getMinutes();
+        var todaySecond = today.getSeconds();
+        var t1 = Date.UTC(2021,09,01,00,00,00); // 网站建立时间
+        var t2 = Date.UTC(todayYear,todayMonth,todayDate,todayHour,todayMinute,todaySecond);
+        var diff = t2 - t1;
+        var diffYears = Math.floor(diff/years);
+        var diffDays = Math.floor((diff/days)-diffYears*365);
+        var diffHours = Math.floor((diff-(diffYears*365+diffDays)*days)/hours);
+        var diffMinutes = Math.floor((diff-(diffYears*365+diffDays)*days-diffHours*hours)/minutes);
+        var diffSeconds = Math.floor((diff-(diffYears*365+diffDays)*days-diffHours*hours-diffMinutes*minutes)/seconds);
+        document.getElementById("sitetime").innerHTML=" 本站已安全运行 "+diffYears+" years "+diffDays+" days "+diffHours+" hours "+diffMinutes+" mins "+diffSeconds+" secs";
+        }
+        siteTime();
+    </script>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : false,
+      appId      : 'mojaLGNNMrKkKETfoAux4Kqt-gzGzoHsz',
+      appKey     : 'DLhcFTxQjAu7AqlSKauBv6cH',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : true,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
