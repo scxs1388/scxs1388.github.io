@@ -165,12 +165,12 @@ document.addEventListener('DOMContentLoaded', () => {
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">1</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">2</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">4</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">5</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -321,6 +321,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <p>本文提出了 Training Quantization Thresholds (TQT)：一种基于 QAT 的学习均匀、对称、Per-tensor 量化器的截断阈值的方法。TQT 在训练时使用了 STE ，并将量化步长限制在了 Power-of-Two，采用 PoT 形式的量化步长在推理时仅使用整型加法和移位运算，利于硬件部署。本文对 TQT 的鲁棒性进行了数学分析，并在多个 CNN 上进行了 ImageNet 图像分类任务。实验结果表明：TQT 在 MobileNet 等之前较难量化的神经网络上在少于 5 epochs 的训练就达到了接近浮点的精度。本文相关 Github 项目：<a target="_blank" rel="noopener" href="https://www.github.com/Xilinx/graffitist">Graffitist</a></p>
 <span id="more"></span>
 <!-- ([local PDF](./quantization/1807.10029.pdf)) -->
+
 <blockquote>
 <ul>
 <li>Title: <strong>Trained Quantization Thresholds for Accurate and Efficient Fix-point Inference of Deep Neural Networks</strong></li>
@@ -331,116 +332,32 @@ document.addEventListener('DOMContentLoaded', () => {
 <li>Project(s): <a target="_blank" rel="noopener" href="https://www.github.com/Xilinx/graffitist">Graffitist</a>, <a target="_blank" rel="noopener" href="https://github.com/Xilinx/Vitis-AI/tree/master/tools/Vitis-AI-Quantizer/vai_q_pytorch">Vitis-AI</a></li>
 </ul>
 </blockquote>
-<h3 id="Introduction">Introduction</h3>
-<p>本文主要关注以下三个问题：</p>
+<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h3><p>本文主要关注以下三个问题：</p>
 <ol>
 <li>之前的量化工作大部分是基于 PTQ 的静态量化，即对预训练模型进行校准得到的截断阈值在之后保持固定不变，相比 QAT 方法得到的量化截断阈值的泛化能力更差。</li>
 <li>PTQ 校准中定义的 Per-Tensor 或 Per-Channel 的 Quantization Error 所用的 Metrics (KLD、MSE等) 都是基于经验设计的。这些 Metrics 与模型最终的 Loss 是否存在相关性，现在业界依然没有理论上的数学证明。相比起那些优化人工给定的 Metrics 的 PTQ 方法，使用 Training-based 的方法更有效，在理论上也更有说服力。</li>
 <li>2018 年 Google 的论文提出的 Integer-Only Inference 量化方案中的比例系数 M 是 dyadic 型的参数而非 PoT 型的参数，会存在一定的高位整型数存储和乘法运算，这会对硬件的存储和运算造成负担。更理想的全整型推理量化方案将量化步长限制在 PoT 的形式，这样可以完全用移位来代替量化步长的乘法运算，更利于硬件加速和实现。</li>
 </ol>
-<h3 id="Related-Works">Related Works</h3>
-<ul>
+<h3 id="Related-Works"><a href="#Related-Works" class="headerlink" title="Related Works"></a>Related Works</h3><ul>
 <li>STE <a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1308.3432">arxiv:1308.3432</a></li>
 <li>Integer-Arithmetic-Only Inference (CVPR 2018) <a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1712.05877">arxiv:1712.05877</a></li>
 <li>PACT <a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1805.06085">arxiv:1805.06085</a></li>
 <li>LSQ (ICLR 2020) <a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1902.08153">arxiv:1902.08153</a></li>
 </ul>
-<h3 id="Trained-Quantization-Thresholds-TQT">Trained Quantization Thresholds (TQT)</h3>
-<h4 id="Quantizer-Constraints">Quantizer Constraints</h4>
-<p>TQT 的采用的均匀量化公式如下：<br>
-$$<br>
-r=s·(q-z)<br>
-\tag{2}<br>
-$$<br>
-其中 $s$ 为量化步长，$z$ 为量化零点，$q$ 为量化后的整型数值。为了简化量化运算，TQT采用了对称量化，令 $z=0$ 省略多项式乘法中含量化零点的展开项：<br>
-$$<br>
-r=s·q<br>
-\tag{3}<br>
-$$<br>
-同时，TQT 要求量化步长 $s$ 限制为 PoT 的形式，即 $s=2^{-f}$，其中 $f$ 为fractional length，可以理解为浮点数小数点的位置，是一个有符号整型数。这样在计算 $r=s·q$ 时就可以用移位运算代替乘法运算。</p>
-<h4 id="Forward-Pass">Forward Pass</h4>
-<p>TQT 完整的量化前向计算包含缩放 (Scaling)、取整 (Rounding)、截断 (Saturation)、反量化 (De-quant) 四个计算步骤，量化函数如下：<br>
-$$<br>
-q(x;s)=\text{clip} \left( \left\lfloor \frac{x}{s} \right\rceil ;n,p \right)·s<br>
-\tag{4}<br>
-$$<br>
-其中 $q(x;s)$ 表示量化函数，$x$ 表示输入 Tensor，$s$ 表示量化步长，$\text{clip}$ 表示区间限定函数，$n$ 和 $p$ 分别为区间上下界。<br>
-量化参数取值根据输入 Tensor 是否有符号决定。</p>
+<h3 id="Trained-Quantization-Thresholds-TQT"><a href="#Trained-Quantization-Thresholds-TQT" class="headerlink" title="Trained Quantization Thresholds (TQT)"></a>Trained Quantization Thresholds (TQT)</h3><h4 id="Quantizer-Constraints"><a href="#Quantizer-Constraints" class="headerlink" title="Quantizer Constraints"></a>Quantizer Constraints</h4><p>TQT 的采用的均匀量化公式如下：<br>$$<br>r&#x3D;s·(q-z)<br>\tag{2}<br>$$<br>其中 $s$ 为量化步长，$z$ 为量化零点，$q$ 为量化后的整型数值。为了简化量化运算，TQT采用了对称量化，令 $z&#x3D;0$ 省略多项式乘法中含量化零点的展开项：<br>$$<br>r&#x3D;s·q<br>\tag{3}<br>$$<br>同时，TQT 要求量化步长 $s$ 限制为 PoT 的形式，即 $s&#x3D;2^{-f}$，其中 $f$ 为fractional length，可以理解为浮点数小数点的位置，是一个有符号整型数。这样在计算 $r&#x3D;s·q$ 时就可以用移位运算代替乘法运算。</p>
+<h4 id="Forward-Pass"><a href="#Forward-Pass" class="headerlink" title="Forward Pass"></a>Forward Pass</h4><p>TQT 完整的量化前向计算包含缩放 (Scaling)、取整 (Rounding)、截断 (Saturation)、反量化 (De-quant) 四个计算步骤，量化函数如下：<br>$$<br>q(x;s)&#x3D;\text{clip} \left( \left\lfloor \frac{x}{s} \right\rceil ;n,p \right)·s<br>\tag{4}<br>$$<br>其中 $q(x;s)$ 表示量化函数，$x$ 表示输入 Tensor，$s$ 表示量化步长，$\text{clip}$ 表示区间限定函数，$n$ 和 $p$ 分别为区间上下界。<br>量化参数取值根据输入 Tensor 是否有符号决定。</p>
 <ul>
-<li>输入为有符号数 (signed)：<br>
-$$<br>
-n=-2^{b-1}, p=2^{b-1}-1, s=\frac{2^{\left\lceil \text{log}_2\thinspace t \right\rceil}}{2^{b-1}}<br>
-$$</li>
-<li>输入为无符号数 (unsigned)：<br>
-$$<br>
-n=0, p=2^b-1, s=\frac{2^{\left\lceil \text{log}_2\thinspace t \right\rceil}}{2^b}<br>
-$$<br>
-其中 $t$ 是原始的量化截断阈值，实际上的量化截断阈值的取值是大于 $t$ 的最小的 PoT 型数值 $2^{\left\lceil \text{log}_2\thinspace t \right\rceil}$。</li>
+<li>输入为有符号数 (signed)：<br>$$<br>n&#x3D;-2^{b-1}, p&#x3D;2^{b-1}-1, s&#x3D;\frac{2^{\left\lceil \text{log}_2\thinspace t \right\rceil}}{2^{b-1}}<br>$$</li>
+<li>输入为无符号数 (unsigned)：<br>$$<br>n&#x3D;0, p&#x3D;2^b-1, s&#x3D;\frac{2^{\left\lceil \text{log}_2\thinspace t \right\rceil}}{2^b}<br>$$<br>其中 $t$ 是原始的量化截断阈值，实际上的量化截断阈值的取值是大于 $t$ 的最小的 PoT 型数值 $2^{\left\lceil \text{log}_2\thinspace t \right\rceil}$。</li>
 </ul>
-<h4 id="Backward-Pass">Backward Pass</h4>
-<p>TQT 在训练过程中同时优化输入 $x$ 和量化步长 $s$。为了更方便表示反向传播的梯度，可以改写前向传播的量化函数中的 $\text{clip}$ 函数成为如下的分段函数形式：<br>
-$$<br>
-q(x;s)=<br>
-\left\lbrace<br>
-\begin{aligned}<br>
-&amp; \left\lfloor \frac{x}{s} \right\rceil ·s &amp;&amp; \text{if } n\leq\left\lfloor \frac{x}{s} \right\rceil \leq p, \\<br>
-&amp; n·s &amp;&amp; \text{if } \left\lfloor \frac{x}{s} \right\rceil &lt; n, \\<br>
-&amp; p·s &amp;&amp; \text{if } \left\lfloor \frac{x}{s} \right\rceil &gt; p. \\<br>
-\end{aligned}<br>
-\right.<br>
-\tag{5}<br>
-$$<br>
-在进行反向传播时，TQT 对不可反向传播的取整运算采用了 STE，即对于 $\left\lceil x \right\rceil \neq x, \left\lfloor x \right\rfloor \neq x,  \left\lfloor x \right\rceil \neq x$ 的情况时，令$\frac{\partial \left\lceil x \right\rceil}{\partial x} = \frac{\partial \left\lfloor x \right\rfloor}{\partial x} = \frac{\partial \left\lfloor x \right\rceil}{\partial x} = 1$。<br>
-这样得到的量化函数 $q$ 关于 $x$ 和 $s$ 的梯度如下：<br>
-$$<br>
-\nabla_s q(x;s)=<br>
-\left\lbrace<br>
-\begin{aligned}<br>
-&amp; \left\lfloor \frac{x}{s} \right\rceil - \frac{x}{s} &amp;&amp; \text{if } n\leq\left\lfloor \frac{x}{s} \right\rceil \leq p, \\<br>
-&amp; n &amp;&amp; \text{if } \left\lfloor \frac{x}{s} \right\rceil &lt; n, \\<br>
-&amp; p &amp;&amp; \text{if } \left\lfloor \frac{x}{s} \right\rceil &gt; p. \\<br>
-\end{aligned}<br>
-\right.<br>
-\tag{6}<br>
-$$<br>
-注意到 $\nabla_{\text{log}_2 \thinspace t} s=s \text{ ln}(2)$，上式可继续转化为：<br>
-$$<br>
-\nabla _{\text{log}_2\thinspace t} q(x;s)=s \text{ ln}(2)·<br>
-\left\lbrace<br>
-\begin{aligned}<br>
-&amp; \left\lfloor \frac{x}{s} \right\rceil - \frac{x}{s} &amp;&amp; \text{if } n\leq\left\lfloor \frac{x}{s} \right\rceil \leq p, \\<br>
-&amp; n &amp;&amp; \text{if } \left\lfloor \frac{x}{s} \right\rceil &lt; n, \\<br>
-&amp; p &amp;&amp; \text{if } \left\lfloor \frac{x}{s} \right\rceil &gt; p. \\<br>
-\end{aligned}<br>
-\right.<br>
-\tag{7}<br>
-$$<br>
-同理，输入 $x$ 的梯度如下：<br>
-$$<br>
-\nabla _x q(x;s)=<br>
-\left\lbrace<br>
-\begin{aligned}<br>
-&amp; 1 &amp;&amp; \text{if } n \leq \left\lfloor \frac{x}{s} \right\rceil \leq p, \\<br>
-&amp; 0 &amp;&amp; \text{otherwise} \\<br>
-\end{aligned}<br>
-\right.<br>
-\tag{8}<br>
-$$</p>
-<h4 id="Interpretation-of-Gradients">Interpretation of Gradients</h4>
-<p>上面给出了量化器 $q$ 对 $x$ 和 $\text{log}_2 \thinspace t$ 的梯度公式，为了直观地理解量化器在 QAT 反向传播时梯度的变化情况，不妨考虑下面这样一个简单的场景：<br>
-使用最小平方误差 (least-square error) L2损失函数 $L = (q(x;s) - x)^2/2$ 优化一个 TQT 量化器，$L$ 对 $x$ 和 $\text{log}_2 \thinspace t$ 的梯度如下：<br>
-$$<br>
-\begin{align}<br>
-\nabla _{\text{log}_2 \thinspace t} L &amp;= (q(x;s) - x) · \nabla _{\text{log}_2 \thinspace t} q(x;s) \tag{9}\\<br>
-\nabla _x L &amp;= (q(x;s) - x) · (\nabla _x q(x;s) - 1) \tag{10}\\<br>
-\end{align}<br>
-$$</p>
+<h4 id="Backward-Pass"><a href="#Backward-Pass" class="headerlink" title="Backward Pass"></a>Backward Pass</h4><p>TQT 在训练过程中同时优化输入 $x$ 和量化步长 $s$。为了更方便表示反向传播的梯度，可以改写前向传播的量化函数中的 $\text{clip}$ 函数成为如下的分段函数形式：<br>$$<br>q(x;s)&#x3D;<br>\left\lbrace<br>\begin{aligned}<br>&amp; \left\lfloor \frac{x}{s} \right\rceil ·s &amp;&amp; \text{if } n\leq\left\lfloor \frac{x}{s} \right\rceil \leq p, \\<br>&amp; n·s &amp;&amp; \text{if } \left\lfloor \frac{x}{s} \right\rceil &lt; n, \\<br>&amp; p·s &amp;&amp; \text{if } \left\lfloor \frac{x}{s} \right\rceil &gt; p. \\<br>\end{aligned}<br>\right.<br>\tag{5}<br>$$<br>在进行反向传播时，TQT 对不可反向传播的取整运算采用了 STE，即对于 $\left\lceil x \right\rceil \neq x, \left\lfloor x \right\rfloor \neq x,  \left\lfloor x \right\rceil \neq x$ 的情况时，令$\frac{\partial \left\lceil x \right\rceil}{\partial x} &#x3D; \frac{\partial \left\lfloor x \right\rfloor}{\partial x} &#x3D; \frac{\partial \left\lfloor x \right\rceil}{\partial x} &#x3D; 1$。<br>这样得到的量化函数 $q$ 关于 $x$ 和 $s$ 的梯度如下：<br>$$<br>\nabla_s q(x;s)&#x3D;<br>\left\lbrace<br>\begin{aligned}<br>&amp; \left\lfloor \frac{x}{s} \right\rceil - \frac{x}{s} &amp;&amp; \text{if } n\leq\left\lfloor \frac{x}{s} \right\rceil \leq p, \\<br>&amp; n &amp;&amp; \text{if } \left\lfloor \frac{x}{s} \right\rceil &lt; n, \\<br>&amp; p &amp;&amp; \text{if } \left\lfloor \frac{x}{s} \right\rceil &gt; p. \\<br>\end{aligned}<br>\right.<br>\tag{6}<br>$$<br>注意到 $\nabla_{\text{log}_2 \thinspace t} s&#x3D;s \text{ ln}(2)$，上式可继续转化为：<br>$$<br>\nabla _{\text{log}_2\thinspace t} q(x;s)&#x3D;s \text{ ln}(2)·<br>\left\lbrace<br>\begin{aligned}<br>&amp; \left\lfloor \frac{x}{s} \right\rceil - \frac{x}{s} &amp;&amp; \text{if } n\leq\left\lfloor \frac{x}{s} \right\rceil \leq p, \\<br>&amp; n &amp;&amp; \text{if } \left\lfloor \frac{x}{s} \right\rceil &lt; n, \\<br>&amp; p &amp;&amp; \text{if } \left\lfloor \frac{x}{s} \right\rceil &gt; p. \\<br>\end{aligned}<br>\right.<br>\tag{7}<br>$$<br>同理，输入 $x$ 的梯度如下：<br>$$<br>\nabla _x q(x;s)&#x3D;<br>\left\lbrace<br>\begin{aligned}<br>&amp; 1 &amp;&amp; \text{if } n \leq \left\lfloor \frac{x}{s} \right\rceil \leq p, \\<br>&amp; 0 &amp;&amp; \text{otherwise} \\<br>\end{aligned}<br>\right.<br>\tag{8}<br>$$</p>
+<h4 id="Interpretation-of-Gradients"><a href="#Interpretation-of-Gradients" class="headerlink" title="Interpretation of Gradients"></a>Interpretation of Gradients</h4><p>上面给出了量化器 $q$ 对 $x$ 和 $\text{log}_2 \thinspace t$ 的梯度公式，为了直观地理解量化器在 QAT 反向传播时梯度的变化情况，不妨考虑下面这样一个简单的场景：<br>使用最小平方误差 (least-square error) L2损失函数 $L &#x3D; (q(x;s) - x)^2&#x2F;2$ 优化一个 TQT 量化器，$L$ 对 $x$ 和 $\text{log}_2 \thinspace t$ 的梯度如下：<br>$$<br>\begin{align}<br>\nabla _{\text{log}_2 \thinspace t} L &amp;&#x3D; (q(x;s) - x) · \nabla _{\text{log}_2 \thinspace t} q(x;s) \tag{9}\\<br>\nabla _x L &amp;&#x3D; (q(x;s) - x) · (\nabla _x q(x;s) - 1) \tag{10}\\<br>\end{align}<br>$$</p>
 <div align=center>
 <img data-src="https://i.loli.net/2021/12/02/Q3jUlOMsLCuPwvE.png" style="zoom: 40%;">
 <strong>Figure 1</strong>
 </div>
-<p>Figure 1 展示了在 $b=3, t=1.0$ 时有符号和无符号情况下函数值和各参数梯度的变化曲线。第一行为量化函数，第二行为损失函数。<br>
-考虑到取整 $\left\lfloor · \right\rceil$ 函数和截断 $\text{clip}$ 函数的共同作用，实际上输入 $x$ 的真实范围为 $[s·(n-0.5), s·(p+0.5)]$。从Figure 1可以看出：</p>
+
+<p>Figure 1 展示了在 $b&#x3D;3, t&#x3D;1.0$ 时有符号和无符号情况下函数值和各参数梯度的变化曲线。第一行为量化函数，第二行为损失函数。<br>考虑到取整 $\left\lfloor · \right\rceil$ 函数和截断 $\text{clip}$ 函数的共同作用，实际上输入 $x$ 的真实范围为 $[s·(n-0.5), s·(p+0.5)]$。从Figure 1可以看出：</p>
 <ul>
 <li>当输入 $x$ 在真实范围内时，$L$ 对 $\text{log}_2 \thinspace t$ 的梯度非负，对 $x$ 的梯度为 $0$；</li>
 <li>当输入 $x$ 在真实范围外时，$L$ 对 $\text{log}_2 \thinspace t$ 的梯度恒负，对 $x$ 的梯度左负右正。</li>
@@ -449,6 +366,7 @@ $$</p>
     <img data-src="https://i.loli.net/2021/12/02/5jg4SBlJTN6yupL.png" style="zoom: 40%;">
     <strong>Figure 2</strong>
 </div>
+
 <p>Figure 2 展示了通常情况下呈钟型分布(例如高斯分布)的输入 $x$ 的 $\text{log}_2 \thinspace t$ 梯度的变化情况：</p>
 <ul>
 <li>左图：绝大部分输入值 $x$ 都在真实范围内，对 $\text{log}_2 \thinspace t$ 的累计梯度为正，梯度下降更新使得 $\text{log}_2 \thinspace t$ 减小向分布中心靠近；</li>
@@ -458,115 +376,70 @@ $$</p>
 <p>TQT 在 QAT 过程中同时优化输入 $x$。与对截断阈值梯度的分析类似：</p>
 <ul>
 <li>当输入 $x$ 在真实范围内时，$L$ 对 $x$ 的梯度为 $0$，即截断范围内输入保持不变；</li>
-<li>当输入 $x$ 在真实范围外时，$L$ 对 $x$ 的梯度左负右正。<br>
-这表明，对于范围外的输入 $x$，梯度下降更新使得输入 $x$ 向范围内变化，使 $x$ 越来越趋向分布中心，减少分布中的离群点。</li>
+<li>当输入 $x$ 在真实范围外时，$L$ 对 $x$ 的梯度左负右正。<br>这表明，对于范围外的输入 $x$，梯度下降更新使得输入 $x$ 向范围内变化，使 $x$ 越来越趋向分布中心，减少分布中的离群点。</li>
 </ul>
-<h4 id="Comparison-to-Clipped-Threshold-Gradients">Comparison to Clipped Threshold Gradients</h4>
-<ul>
+<h4 id="Comparison-to-Clipped-Threshold-Gradients"><a href="#Comparison-to-Clipped-Threshold-Gradients" class="headerlink" title="Comparison to Clipped Threshold Gradients"></a>Comparison to Clipped Threshold Gradients</h4><ul>
 <li>与 TensorFlow 的 FakeQuant 的比较</li>
 </ul>
 <div align=center>
     <img data-src="https://i.loli.net/2021/12/02/kc2vn8GVz4ZIAHj.png" style="zoom: 40%;">
     <strong>Figure 3</strong>
 </div>
-<p>TensorFlow 框架的伪量化模块 FakeQuant 参考的量化函数如下：<br>
-$$<br>
-q(x;n,p)=\left\lfloor \frac{\text{clip}(x;n,p)-n}{\frac{p-n}{2^b-1}} \right\rceil · \frac{p-n}{2^b-1} + n<br>
-\tag{11}<br>
-$$<br>
-Figure 3 展示了在 $b=3, n=-1.125, p=0.875$ 时 TensorFlow 的 FakeQuant 模块的函数值和各参数梯度的变化曲线。与TQT的量化方法相比，FakeQuant学习截断阈值 $n$ 和 $p$，在反向传播阶段将取整函数简化为恒等函数。由Figure 3可以看出， $n$ 和 $p$ 的梯度恒为正，因此在梯度下降更新时只能向外侧变化，这样的学习方法得到的结果更贴近于PTQ的min/max截断阈值取值，而不是在量化模型精度和截断范围之间进行trade-off。</p>
+
+<p>TensorFlow 框架的伪量化模块 FakeQuant 参考的量化函数如下：<br>$$<br>q(x;n,p)&#x3D;\left\lfloor \frac{\text{clip}(x;n,p)-n}{\frac{p-n}{2^b-1}} \right\rceil · \frac{p-n}{2^b-1} + n<br>\tag{11}<br>$$<br>Figure 3 展示了在 $b&#x3D;3, n&#x3D;-1.125, p&#x3D;0.875$ 时 TensorFlow 的 FakeQuant 模块的函数值和各参数梯度的变化曲线。与TQT的量化方法相比，FakeQuant学习截断阈值 $n$ 和 $p$，在反向传播阶段将取整函数简化为恒等函数。由Figure 3可以看出， $n$ 和 $p$ 的梯度恒为正，因此在梯度下降更新时只能向外侧变化，这样的学习方法得到的结果更贴近于PTQ的min&#x2F;max截断阈值取值，而不是在量化模型精度和截断范围之间进行trade-off。</p>
 <ul>
 <li>与 PACT 的比较</li>
 </ul>
-<p>PACT (PArameterized Clipping acTivation) 为了能够将量化截断阈值引入 QAT 训练过程中进行优化，提出了 Clipped ReLU 激活函数：<br>
-$$<br>
-y=PACT(x)=0.5(|x|-|x-\alpha|+\alpha)=<br>
-\left\lbrace<br>
-\begin{aligned}<br>
-&amp; 0, &amp;&amp; x \in (-\infty, 0) \\<br>
-&amp; x, &amp;&amp; x \in [0, \alpha) \\<br>
-&amp; \alpha, &amp;&amp; x \in [\alpha, +\infty)  \\<br>
-\end{aligned}<br>
-\right.<br>
-$$<br>
-输出激活值对截断阈值 $\alpha$ 的梯度使用 STE 近似如下：<br>
-$$<br>
-\frac{\partial y_q}{\partial \alpha} =<br>
-\left\lbrace<br>
-\begin{aligned}<br>
-&amp; 0, &amp;&amp; x \in (-\infty, \alpha) \\<br>
-&amp; 1, &amp;&amp; x \in [\alpha, +\infty) \\<br>
-\end{aligned}<br>
-\right.<br>
-\tag{1}<br>
-$$<br>
-在 PACT 方法中，$\alpha$ 的梯度只与 $x$ 取值在 $\alpha$ 的哪一侧有关，显然只有在 $\alpha$ 右侧的值能够造成影响，因此在训练过程中 $\alpha$ 会趋向于 $x$ 的右端取值的最大值。为了避免这一现象，PACT 在训练时在损失函数中加入了对 $\alpha$ 的 L2 正则项，但是 L2 正则项的超参数 $\lambda_{\alpha}$ 只能人工设定，不能自动地在 QAT 过程中进行优化，因此相比 TQT 而言略显不足。有关 PACT 的其它具体细节请查阅相关文献和阅读笔记。</p>
-<h3 id="Framework-of-TQT">Framework of TQT</h3>
-<p>本文相关的 Github 项目 Graffitist 是基于 TensorFlow 框架和 TQT 方法实现的端到端式的量化解决方案。Graffitist 支持对多种神经网络进行计算图优化和模型量化。</p>
-<h4 id="Graph-Optimizations">Graph Optimizations</h4>
-<p>Graffitist 实现了多种对计算图的优化方式。包括 Fuse-BN、多重 concat 拆分成单一 concat、将平均池化层转化为深度卷积层等等。</p>
-<h4 id="Quantization-Modes">Quantization Modes</h4>
-<p>Graffitist 实现了多种量化模式，包括 PTQ 的静态量化模式和 QAT 的量化模式。</p>
-<h4 id="Layer-Precisions">Layer Precisions</h4>
-<p>Graffitist 分别实现了针对计算层、激活层、平均池化层和 concat 操作的量化计算位数设计。</p>
-<h4 id="Fused-Kernel-Implementation">Fused Kernel Implementation</h4>
-<p>Graffitist 中打包了为 CPU/GPU 预编译的融合后的量化内核。经过融合后的量化器占用内存低，从而可以使用更大的 batch size 来实现加速。</p>
-<h3 id="Experiments">Experiments</h3>
-<p>此处只展示实验结果。省略了实验的初始化和实现细节，具体细节请参看原论文。</p>
-<h4 id="Results">Results</h4>
-<div align=center>
+<p>PACT (PArameterized Clipping acTivation) 为了能够将量化截断阈值引入 QAT 训练过程中进行优化，提出了 Clipped ReLU 激活函数：<br>$$<br>y&#x3D;PACT(x)&#x3D;0.5(|x|-|x-\alpha|+\alpha)&#x3D;<br>\left\lbrace<br>\begin{aligned}<br>&amp; 0, &amp;&amp; x \in (-\infty, 0) \\<br>&amp; x, &amp;&amp; x \in [0, \alpha) \\<br>&amp; \alpha, &amp;&amp; x \in [\alpha, +\infty)  \\<br>\end{aligned}<br>\right.<br>$$<br>输出激活值对截断阈值 $\alpha$ 的梯度使用 STE 近似如下：<br>$$<br>\frac{\partial y_q}{\partial \alpha} &#x3D;<br>\left\lbrace<br>\begin{aligned}<br>&amp; 0, &amp;&amp; x \in (-\infty, \alpha) \\<br>&amp; 1, &amp;&amp; x \in [\alpha, +\infty) \\<br>\end{aligned}<br>\right.<br>\tag{1}<br>$$<br>在 PACT 方法中，$\alpha$ 的梯度只与 $x$ 取值在 $\alpha$ 的哪一侧有关，显然只有在 $\alpha$ 右侧的值能够造成影响，因此在训练过程中 $\alpha$ 会趋向于 $x$ 的右端取值的最大值。为了避免这一现象，PACT 在训练时在损失函数中加入了对 $\alpha$ 的 L2 正则项，但是 L2 正则项的超参数 $\lambda_{\alpha}$ 只能人工设定，不能自动地在 QAT 过程中进行优化，因此相比 TQT 而言略显不足。有关 PACT 的其它具体细节请查阅相关文献和阅读笔记。</p>
+<h3 id="Framework-of-TQT"><a href="#Framework-of-TQT" class="headerlink" title="Framework of TQT"></a>Framework of TQT</h3><p>本文相关的 Github 项目 Graffitist 是基于 TensorFlow 框架和 TQT 方法实现的端到端式的量化解决方案。Graffitist 支持对多种神经网络进行计算图优化和模型量化。</p>
+<h4 id="Graph-Optimizations"><a href="#Graph-Optimizations" class="headerlink" title="Graph Optimizations"></a>Graph Optimizations</h4><p>Graffitist 实现了多种对计算图的优化方式。包括 Fuse-BN、多重 concat 拆分成单一 concat、将平均池化层转化为深度卷积层等等。</p>
+<h4 id="Quantization-Modes"><a href="#Quantization-Modes" class="headerlink" title="Quantization Modes"></a>Quantization Modes</h4><p>Graffitist 实现了多种量化模式，包括 PTQ 的静态量化模式和 QAT 的量化模式。</p>
+<h4 id="Layer-Precisions"><a href="#Layer-Precisions" class="headerlink" title="Layer Precisions"></a>Layer Precisions</h4><p>Graffitist 分别实现了针对计算层、激活层、平均池化层和 concat 操作的量化计算位数设计。</p>
+<h4 id="Fused-Kernel-Implementation"><a href="#Fused-Kernel-Implementation" class="headerlink" title="Fused Kernel Implementation"></a>Fused Kernel Implementation</h4><p>Graffitist 中打包了为 CPU&#x2F;GPU 预编译的融合后的量化内核。经过融合后的量化器占用内存低，从而可以使用更大的 batch size 来实现加速。</p>
+<h3 id="Experiments"><a href="#Experiments" class="headerlink" title="Experiments"></a>Experiments</h3><p>此处只展示实验结果。省略了实验的初始化和实现细节，具体细节请参看原论文。</p>
+<h4 id="Results"><a href="#Results" class="headerlink" title="Results"></a>Results</h4><div align=center>
     <img data-src="https://i.loli.net/2021/12/03/JAiCtqHT9Pu5sQM.png" style="zoom: 40%;">
     <strong>Table 3</strong>
 </div>
 Table 3 展示了对 12 种不同的神经网络模型在 ImageNet 分类任务上的验证准确率。wt 表示只训练模型权重参数，wt,th 表示模型权重和截断阈值同时训练。所有再训练过程均不超过5 epochs。
-<h3 id="Discussion">Discussion</h3>
-<h4 id="Insights-from-TQT">Insights from TQT</h4>
-<p>本文观察到了关于 TQT 的一些值得注意的实验现象：</p>
+
+<h3 id="Discussion"><a href="#Discussion" class="headerlink" title="Discussion"></a>Discussion</h3><h4 id="Insights-from-TQT"><a href="#Insights-from-TQT" class="headerlink" title="Insights from TQT"></a>Insights from TQT</h4><p>本文观察到了关于 TQT 的一些值得注意的实验现象：</p>
 <ul>
 <li>QAT 方法得到的模型预测精度比 PTQ 静态量化的更高，这也是期望之中的结果。</li>
 <li>对于 VGG、Inception、ResNet 等 INT8 量化难度较低的模型，固定截断阈值只对模型参数进行再训练的效果已经足够好了，此时也采用 TQT 方法也没有更多精度上的提升。</li>
 <li>对于 MobileNet、DarkNet 等 INT8 量化难度较高的模型，同时训练模型参数与截断阈值要比只训练模型参数的精度高 $4 \%$，甚至接近 FP32 模型的精度。</li>
 <li>对于更低比特的 INT4 量化，只训练模型参数已经很难提升精度了，因此 INT4 量化必须使用 TQT 方法才能有效维持模型精度。</li>
 </ul>
-<h4 id="MobileNet-Comparisons">MobileNet Comparisons</h4>
-<div align=center>
+<h4 id="MobileNet-Comparisons"><a href="#MobileNet-Comparisons" class="headerlink" title="MobileNet Comparisons"></a>MobileNet Comparisons</h4><div align=center>
     <img data-src="https://i.loli.net/2021/12/03/McviHZDa6btCxso.png" style="zoom: 40%;">
     <strong>Table 1</strong>
 </div>
 对于较难量化的 MobileNet，先前的大量研究已经表明：采用简单的对称、per-tensor 的 PTQ 方法去量化 MobileNet 通常是 detrimental 的。其中一个主要的原因是深度可分离卷积层的权重数值分布是不规则的且不同通道间的数值范围差异很大。然而，使用 TQT (wt,th) 方法对 MobileNet 进行 QAT 的结果已经达到了 FP32 的精度。这里简单地与 Google 的 QAT 结果进行对比，对比结果如 Table 1 所示。尽管 TQT 对量化步长的约束比 Google 的方法更为严格，但是量化后精度却更高，这也体现了 TQT 方法的优越性。
+
 <div align=center>
     <img data-src="https://i.loli.net/2021/12/03/KjP3lmHtBgifpFw.png" style="zoom: 30%;">
     <strong>Figure 5</strong>
 </div>
 Figure 5 中展示了使用 TQT 方法进行 QAT 再训练的 MobileNet v1 前后模型权重参数分布情况。从图中可以体现出量化截断阈值在截断范围和模型精度的 trade-off 的重要性。
+
 <div align=center>
     <img data-src="https://i.loli.net/2021/12/03/ZGzOqthfEnCeb3s.png" style="zoom: 40%;">
     <strong>Figure 6</strong>
 </div>
 Figure 6 中展示了 INT8 和 INT4 量化不同模型所有层的 fractional length 的始末差异分布情况。可以发现 INT8 量化比起 INT4 量化 fractional length 的变化程度更大，这也与 TQT 方法本身的特点有关系：在能够表示的比特位较多时，该方法会更偏向于扩大截断范围；相反，当比特位较少时，截断范围的扩大和模型精度的 trade-off 更加明显。
-<h3 id="Conclusion">Conclusion</h3>
-<p>本文提出了一种通用的学习量化截断阈值的方法 TQT。其特性如下：</p>
+
+<h3 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h3><p>本文提出了一种通用的学习量化截断阈值的方法 TQT。其特性如下：</p>
 <ul>
 <li>TQT 方法能够将量化步长限制在 PoT 型数值，适用于大多数支持定点运算的硬件。</li>
 <li>TQT 学习量化截断阈值的过程能够体现出截断范围和模型精度的 trade-off，并在 INT8 和 INT4 量化中取得很高的精度。</li>
 <li>TQT 方法具有鲁棒性和快速收敛性等特点。</li>
 </ul>
 <p>此外，本文就 TQT 方法基于 TensorFlow 上建立了 Graffitist 项目，并基于 ImageNet 图像分类任务对多个经典模型进行量化实验，最后，本文就某些值得关注的实验现象进行阐述。</p>
-<h3 id="Appendices">Appendices</h3>
-<p>本文的附录内容简单总结如下：</p>
-<h4 id="A-Cost-of-Affine-Quantizer">A Cost of Affine Quantizer</h4>
-<p>本节主要对量化器的计算开销进行分析讨论。<br>
-附录 A.1 对量化乘法运算进行详细分析，表明忽略量化零点 $Z$ 后可以有效地降低量化计算复杂度。<br>
-附录 A.2 分析了浮点型、dyadic 型和 PoT 型量化步长的乘法运算，其中dyadic型详见Google论文，PoT型可以直接使用移位运算代替乘法运算。</p>
-<h4 id="B-Log-Threshold-Training">B Log Threshold Training</h4>
-<p>本节主要针对QAT过程进行分析，主要从数值稳定性、尺度不变性和收敛性三个方面进行讨论分析。<br>
-附录B.1分析训练的数值稳定性(Numeral Stability)。比起训练范围受限的原始截断阈值 $t \in \mathbb{R}^+$，不如直接训练 $\text{log} _2 \thinspace t \in \mathbb{R}$，并且 $\text{log}$ 函数的形式与PoT型正好吻合。<br>
-附录B.2分析训练的尺度不变性(Scale Invariance)，也就是说其梯度应该尽量与其取值大小无关，而只与其它因素有关。<br>
-附录B.3分析训练的收敛性(Convergence)，并给出了不同比特位下Adam优化器的参数取值参考。</p>
-<h4 id="C-Adam-Convergence">C Adam Convergence</h4>
-<p>本节主要针对TQT在Adam优化器上的收敛性进行详细分析。</p>
-<h4 id="D-Best-or-Mean-Validation">D Best or Mean Validation</h4>
-<p>本节主要针对该工作的实验结果筛选进行解释。本文在MobileNetV1和VGG16上的1000次验证平均准确率与最高准确率的差距分别为 $0.1\%$ 和 $0.2\%$，表明结果的真实性和可靠性。</p>
+<h3 id="Appendices"><a href="#Appendices" class="headerlink" title="Appendices"></a>Appendices</h3><p>本文的附录内容简单总结如下：</p>
+<h4 id="A-Cost-of-Affine-Quantizer"><a href="#A-Cost-of-Affine-Quantizer" class="headerlink" title="A Cost of Affine Quantizer"></a>A Cost of Affine Quantizer</h4><p>本节主要对量化器的计算开销进行分析讨论。<br>附录 A.1 对量化乘法运算进行详细分析，表明忽略量化零点 $Z$ 后可以有效地降低量化计算复杂度。<br>附录 A.2 分析了浮点型、dyadic 型和 PoT 型量化步长的乘法运算，其中dyadic型详见Google论文，PoT型可以直接使用移位运算代替乘法运算。</p>
+<h4 id="B-Log-Threshold-Training"><a href="#B-Log-Threshold-Training" class="headerlink" title="B Log Threshold Training"></a>B Log Threshold Training</h4><p>本节主要针对QAT过程进行分析，主要从数值稳定性、尺度不变性和收敛性三个方面进行讨论分析。<br>附录B.1分析训练的数值稳定性(Numeral Stability)。比起训练范围受限的原始截断阈值 $t \in \mathbb{R}^+$，不如直接训练 $\text{log} _2 \thinspace t \in \mathbb{R}$，并且 $\text{log}$ 函数的形式与PoT型正好吻合。<br>附录B.2分析训练的尺度不变性(Scale Invariance)，也就是说其梯度应该尽量与其取值大小无关，而只与其它因素有关。<br>附录B.3分析训练的收敛性(Convergence)，并给出了不同比特位下Adam优化器的参数取值参考。</p>
+<h4 id="C-Adam-Convergence"><a href="#C-Adam-Convergence" class="headerlink" title="C Adam Convergence"></a>C Adam Convergence</h4><p>本节主要针对TQT在Adam优化器上的收敛性进行详细分析。</p>
+<h4 id="D-Best-or-Mean-Validation"><a href="#D-Best-or-Mean-Validation" class="headerlink" title="D Best or Mean Validation"></a>D Best or Mean Validation</h4><p>本节主要针对该工作的实验结果筛选进行解释。本文在MobileNetV1和VGG16上的1000次验证平均准确率与最高准确率的差距分别为 $0.1\%$ 和 $0.2\%$，表明结果的真实性和可靠性。</p>
 
     </div>
 
@@ -692,14 +565,14 @@ Figure 6 中展示了 INT8 和 INT4 量化不同模型所有层的 fractional le
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-count">5</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-count">2</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -752,12 +625,12 @@ Figure 6 中展示了 INT8 和 INT4 量化不同模型所有层的 fractional le
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">24k</span>
+    <span title="站点总字数">32k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2:01</span>
+    <span title="站点阅读时长">2:39</span>
 
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
